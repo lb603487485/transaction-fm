@@ -29,6 +29,7 @@ Data, token arrays and checkpoints never enter this repo. They live on Google Dr
 
 ```
 MyDrive/tfm/
+  notebooks/           the .ipynb files, opened from Drive with Colab; synced back here by the push cell
   data/raw/            Sparkov csv
   data/processed/      token arrays (.npy), vocab.json, bin_edges.json
   pretrain/            checkpoint-N/ ..., best/
