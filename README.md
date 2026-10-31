@@ -4,14 +4,14 @@ Mini Transaction Foundation Model: a GPT-2 style decoder pretrained with next-to
 
 Scaled-down reproduction of the recipe in the Wells Fargo talk "What It Takes to Build Production-Grade Foundation Models in Finance" (1B parameters, 8 x H200) at about 11M parameters on one free Colab T4. The point is not the absolute score; it is testing which of the talk's claims survive at small scale.
 
-Status: skeleton only (2026-10-31). Steps 1 to 7 land in `src/tfm/` over the next week.
+Status: step 1 written (2026-10-31), steps 2 to 7 to follow.
 
 ## Layout
 
 ```
 src/tfm/
   checkpointing.py   resume-safe Trainer settings, latest-checkpoint finder, checkpoint verifier
-  data.py            step 1: load, strip PII, sort by card and time, time-based split   (todo)
+  data.py            step 1: load, strip PII, sort by card and time, time-based split, EDA stats
   tokenizer.py       step 2: per-field binning, vocabulary, windows                      (todo)
   pretrain.py        step 3: causal LM pretraining                                       (todo)
   finetune.py        step 4: GPT2ForSequenceClassification, last-token pooling           (todo)
@@ -31,7 +31,7 @@ Data, token arrays and checkpoints never enter this repo. They live on Google Dr
 MyDrive/Colab Notebooks/tfm/          (ROOT in the notebooks)
   notebooks/           the .ipynb files, opened from Drive with Colab; synced back here by the push cell
   data/raw/            Sparkov csv
-  data/processed/      token arrays (.npy), vocab.json, bin_edges.json
+  data/processed/      transactions.parquet (split column), token arrays (.npy), vocab.json, bin_edges.json
   pretrain/            checkpoint-N/ ..., best/
   finetune/seed0..2/   checkpoint-N/ ..., best/
   xgb/                 saved boosters

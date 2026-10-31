@@ -5,6 +5,7 @@ accelerate
 xgboost
 scikit-learn
 pandas
+pyarrow
 numpy
 matplotlib
 pytest

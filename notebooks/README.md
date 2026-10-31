@@ -9,6 +9,7 @@ Colab pulls and pushes with a **single-repo** fine-grained GitHub token (Content
 | File | Step | What it does |
 |---|---|---|
 | `00_setup.ipynb` | setup | mount Drive, clone or pull the repo, install, create the Drive folders, check GPU and data, push results and notebooks |
+| `01_data.ipynb` | 1 | run `tfm.data.run`, print EDA stats, two charts, push |
 
 Notebooks live in `MyDrive/Colab Notebooks/tfm/notebooks/` and are opened from Drive (right click -> Open with -> Google Colaboratory). Edits save to that Drive file. The push cell in `00_setup.ipynb` copies every notebook there back into this folder with outputs cleared, so the repo copy is always the Drive copy minus outputs. A new notebook is added by dropping it into the Drive folder.
 
