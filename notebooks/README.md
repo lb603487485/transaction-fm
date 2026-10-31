@@ -8,6 +8,14 @@ No GitHub credentials ever go to Colab. The repo stays private; code reaches Col
 
 Drive folder `MyDrive/tfm/code/tfm/` holds a copy of `src/tfm/*.py`. After any change on the laptop, drag the changed `.py` files into that Drive folder (web UI, overwrite). Nothing else from the repo is needed on Colab.
 
+## Notebooks
+
+| File | Step | What it does |
+|---|---|---|
+| `00_setup.ipynb` | setup | mount Drive, import `tfm`, create the Drive folders, check GPU and data |
+
+Upload a notebook to Colab with File -> Upload notebook, or copy it to Drive and open it with Colab. Notebooks are committed with outputs cleared (Edit -> Clear all outputs before downloading back).
+
 ## Cell 1, every session: mount Drive, import the package
 
 ```python
