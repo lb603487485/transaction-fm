@@ -10,7 +10,7 @@ Colab pulls and pushes with a **single-repo** fine-grained GitHub token (Content
 |---|---|---|
 | `00_setup.ipynb` | setup | mount Drive, clone or pull the repo, install, create the Drive folders, check GPU and data, push results and notebooks |
 
-Notebooks live in `MyDrive/tfm/notebooks/` and are opened from Drive (right click -> Open with -> Google Colaboratory). Edits save to that Drive file. The push cell in `00_setup.ipynb` copies every notebook there back into this folder with outputs cleared, so the repo copy is always the Drive copy minus outputs. A new notebook is added by dropping it into the Drive folder.
+Notebooks live in `MyDrive/Colab Notebooks/tfm/notebooks/` and are opened from Drive (right click -> Open with -> Google Colaboratory). Edits save to that Drive file. The push cell in `00_setup.ipynb` copies every notebook there back into this folder with outputs cleared, so the repo copy is always the Drive copy minus outputs. A new notebook is added by dropping it into the Drive folder.
 
 ## Cell 1, every session: mount Drive, pull the repo, install
 
@@ -36,7 +36,7 @@ from pathlib import Path
 from transformers import Trainer
 from tfm.checkpointing import find_latest_checkpoint, verify_checkpoint, training_args
 
-OUT = "/content/drive/MyDrive/tfm/pretrain"
+OUT = f"{ROOT}/pretrain"
 last = find_latest_checkpoint(OUT)
 print("resuming from", last or "scratch")
 
@@ -53,7 +53,7 @@ trainer.save_model(f"{OUT}/best")
 
 ## Getting results back
 
-Every step writes its small outputs (metrics json, png) to `MyDrive/tfm/results/`. The last cell of `00_setup.ipynb` copies them into `results/` and pushes. Pull on the laptop afterwards before editing README or report.
+Every step writes its small outputs (metrics json, png) to `MyDrive/Colab Notebooks/tfm/results/`. The last cell of `00_setup.ipynb` copies them into `results/` and pushes. Pull on the laptop afterwards before editing README or report.
 
 ## End of session
 

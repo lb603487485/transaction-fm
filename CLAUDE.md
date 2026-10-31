@@ -5,7 +5,7 @@ Mini Transaction Foundation Model for TD Bank interview prep (Applied ML Scienti
 ## Rules
 
 - Code lives in `src/tfm/` with tests in `tests/`. Notebooks are thin drivers only.
-- Data, token arrays and checkpoints go to Google Drive (`MyDrive/tfm/`), never into git.
+- Data, token arrays and checkpoints go to Google Drive (`MyDrive/Colab Notebooks/tfm/`), never into git.
 - Every training run must be resumable: `output_dir` on Drive, `save_steps=500`, resume from `find_latest_checkpoint`, verify with `verify_checkpoint`. See README.
 - Numbers in README and report come from `results/metrics/*.json` only. Never write a metric that has not been measured.
 - Repo is private until the report is done; then public, and the link goes on the resume.

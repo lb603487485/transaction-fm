@@ -28,7 +28,7 @@ report/              3 to 4 page technical report
 Data, token arrays and checkpoints never enter this repo. They live on Google Drive. Code reaches Colab by `git clone` with a single-repo token; small result files are pushed back from Colab, checkpoints and data stay on Drive:
 
 ```
-MyDrive/tfm/
+MyDrive/Colab Notebooks/tfm/          (ROOT in the notebooks)
   notebooks/           the .ipynb files, opened from Drive with Colab; synced back here by the push cell
   data/raw/            Sparkov csv
   data/processed/      token arrays (.npy), vocab.json, bin_edges.json
