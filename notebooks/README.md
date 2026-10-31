@@ -11,14 +11,15 @@ Colab pulls and pushes with a **single-repo** fine-grained GitHub token (Content
 | `00_setup.ipynb` | setup | mount Drive, clone or pull the repo, install, create the Drive folders, check GPU and data, push results and notebooks |
 | `01_data.ipynb` | 1 | run `tfm.data.run`, print EDA stats, two charts, push |
 
-Notebooks live in `MyDrive/Colab Notebooks/tfm/notebooks/` and are opened from Drive (right click -> Open with -> Google Colaboratory). Edits save to that Drive file. The push cell in `00_setup.ipynb` copies every notebook there back into this folder with outputs cleared, so the repo copy is always the Drive copy minus outputs. A new notebook is added by dropping it into the Drive folder.
+Notebooks live in `MyDrive/Colab Notebooks/tfm/notebooks/` and are opened from Drive (right click -> Open with -> Google Colaboratory). Edits save to that Drive file. The push cell in `00_setup.ipynb` copies every notebook there back into this folder with outputs cleared, so the repo copy is always the Drive copy minus outputs. A new notebook written on the laptop reaches Drive automatically the next time any notebook's cell 2 runs.
 
-## Cell 1, every session: mount Drive, pull the repo, install
+## Cell 1, every session: mount Drive, pull the repo, sync new notebooks to Drive
 
 ```python
-import os, sys
+import os, sys, glob, shutil
 from google.colab import drive, userdata
 drive.mount("/content/drive")
+ROOT = "/content/drive/MyDrive/Colab Notebooks/tfm"
 tok = userdata.get("GH_TOKEN")
 if not os.path.exists("/content/transaction-fm"):
     !git clone -q https://{tok}@github.com/lb603487485/transaction-fm.git /content/transaction-fm
@@ -27,9 +28,16 @@ else:
 %pip install -q datasets xgboost
 %cd /content/transaction-fm
 sys.path.insert(0, "/content/transaction-fm/src")
+os.makedirs(f"{ROOT}/notebooks", exist_ok=True)
+for f in glob.glob("notebooks/*.ipynb"):          # new notebooks from the repo appear in Drive
+    dst = f"{ROOT}/notebooks/{os.path.basename(f)}"
+    if not os.path.exists(dst):
+        shutil.copy(f, dst); print("new notebook in Drive:", os.path.basename(f))
 import tfm
 print("tfm ok")
 ```
+
+The same cell is the second cell of every notebook, so whichever notebook is opened first pulls the latest code and drops any new notebook into `ROOT/notebooks/`. Existing Drive notebooks are never overwritten by this cell; they flow the other way, Drive -> repo, through the push cell.
 
 ## Cell 2, pretraining: resume if a checkpoint exists
 
