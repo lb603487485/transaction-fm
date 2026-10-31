@@ -112,16 +112,20 @@ def eda_stats(df: pd.DataFrame) -> dict:
     }
 
 
-def run(raw_dir: Path, out_dir: Path, results_dir: Path, val_days: int = 30) -> dict:
-    """Step 1 end to end: raw csv -> processed/transactions.parquet + results/01_data.json."""
+def save_outputs(df: pd.DataFrame, stats: dict, out_dir: Path, results_dir: Path,
+                 test_start: pd.Timestamp, val_days: int = 30) -> dict:
+    """Write processed/transactions.parquet and results/01_data.json; return stats with the boundaries."""
     out_dir, results_dir = Path(out_dir), Path(results_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     results_dir.mkdir(parents=True, exist_ok=True)
-    raw, test_start = load_raw(raw_dir)
-    df = assign_splits(clean(raw), test_start=test_start, val_days=val_days)
     df.to_parquet(out_dir / "transactions.parquet", index=False)
-    stats = eda_stats(df)
-    stats["test_start"] = str(test_start)
-    stats["val_start"] = str(test_start - pd.Timedelta(days=val_days))
+    stats = dict(stats, test_start=str(test_start), val_start=str(test_start - pd.Timedelta(days=val_days)))
     (results_dir / "01_data.json").write_text(json.dumps(stats, indent=2))
     return stats
+
+
+def run(raw_dir: Path, out_dir: Path, results_dir: Path, val_days: int = 30) -> dict:
+    """Step 1 end to end: raw csv -> processed/transactions.parquet + results/01_data.json."""
+    raw, test_start = load_raw(raw_dir)
+    df = assign_splits(clean(raw), test_start=test_start, val_days=val_days)
+    return save_outputs(df, eda_stats(df), out_dir, results_dir, test_start, val_days)
