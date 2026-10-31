@@ -2,13 +2,13 @@
 
 Notebooks stay thin: mount Drive, import `tfm`, call a function, plot. Any logic longer than about 20 lines moves into `src/tfm` so it can be tested and reviewed.
 
-Colab pulls the repo with a **read-only, single-repo** fine-grained GitHub token (Contents: read only, 30-day expiry) stored in Colab Secrets as `GH_TOKEN`. Colab never has write access; results come back through Drive and are committed from the laptop.
+Colab pulls and pushes with a **single-repo** fine-grained GitHub token (Contents: read and write, 30-day expiry, only `transaction-fm`) stored in Colab Secrets as `GH_TOKEN`. Small result files are pushed from Colab; checkpoints and data stay on Drive.
 
 ## Notebooks
 
 | File | Step | What it does |
 |---|---|---|
-| `00_setup.ipynb` | setup | mount Drive, clone or pull the repo, install, create the Drive folders, check GPU and data |
+| `00_setup.ipynb` | setup | mount Drive, clone or pull the repo, install, create the Drive folders, check GPU and data, push results |
 
 Upload a notebook to Colab with File -> Upload notebook, or copy it to Drive and open it with Colab. Notebooks are committed with outputs cleared (Edit -> Clear all outputs before downloading back).
 
@@ -53,7 +53,7 @@ trainer.save_model(f"{OUT}/best")
 
 ## Getting results back
 
-Every step writes its small outputs (metrics json, png) to `MyDrive/tfm/results/`. Download them from the Drive web UI into `results/metrics/` and `results/figures/` in the local repo, then commit and push from the laptop.
+Every step writes its small outputs (metrics json, png) to `MyDrive/tfm/results/`. The last cell of `00_setup.ipynb` copies them into `results/` and pushes. Pull on the laptop afterwards before editing README or report.
 
 ## End of session
 

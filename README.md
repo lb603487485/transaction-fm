@@ -25,7 +25,7 @@ tests/               pytest; runs on CPU without torch
 report/              3 to 4 page technical report
 ```
 
-Data, token arrays and checkpoints never enter this repo. They live on Google Drive. Code reaches Colab by `git clone` with a read-only single-repo token; results come back through Drive and are committed from the laptop, so Colab never has write access to GitHub:
+Data, token arrays and checkpoints never enter this repo. They live on Google Drive. Code reaches Colab by `git clone` with a single-repo token; small result files are pushed back from Colab, checkpoints and data stay on Drive:
 
 ```
 MyDrive/tfm/
@@ -34,7 +34,7 @@ MyDrive/tfm/
   pretrain/            checkpoint-N/ ..., best/
   finetune/seed0..2/   checkpoint-N/ ..., best/
   xgb/                 saved boosters
-  results/             metrics json and png, downloaded into results/ here and committed
+  results/             metrics json and png, copied into results/ here by the notebook and pushed
 ```
 
 ## Training on free Colab without losing work
