@@ -15,7 +15,7 @@ Notebooks live in `MyDrive/Colab Notebooks/tfm/notebooks/` and are opened from D
 ## Cell 1, every session: mount Drive, pull the repo, install
 
 ```python
-import os
+import os, sys
 from google.colab import drive, userdata
 drive.mount("/content/drive")
 tok = userdata.get("GH_TOKEN")
@@ -23,8 +23,9 @@ if not os.path.exists("/content/transaction-fm"):
     !git clone -q https://{tok}@github.com/lb603487485/transaction-fm.git /content/transaction-fm
 else:
     !cd /content/transaction-fm && git pull -q
-%pip install -q -e /content/transaction-fm
+%pip install -q datasets xgboost
 %cd /content/transaction-fm
+sys.path.insert(0, "/content/transaction-fm/src")
 import tfm
 print("tfm ok")
 ```
