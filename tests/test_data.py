@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from tfm.data import PII_COLUMNS, assign_splits, clean, eda_stats, run
+from tfm.data import PII_COLUMNS, assert_train_only, assign_splits, clean, eda_stats, run, train_only
 
 RAW_COLUMNS = [
     "Unnamed: 0", "trans_date_trans_time", "cc_num", "merchant", "category", "amt", "first", "last",
@@ -87,3 +87,19 @@ def test_run_writes_parquet_and_json(tmp_path):
     back = pd.read_parquet(out / "transactions.parquet")
     assert len(back) == 120 and "split" in back.columns
     assert stats["test_start"] == str(pd.read_csv(raw / "fraudTest.csv")["trans_date_trans_time"].min())
+
+
+def test_assert_train_only_blocks_val_and_test_rows():
+    df = assign_splits(clean(raw_frame()), test_start=pd.Timestamp("2019-05-01"))
+    assert_train_only(train_only(df))  # passes
+    with pytest.raises(ValueError, match="train rows only"):
+        assert_train_only(df)  # contains val and test
+    with pytest.raises(ValueError, match="train rows only"):
+        assert_train_only(df[df["split"] == "test"], what="tokenizer.fit")
+    with pytest.raises(ValueError, match="no split column"):
+        assert_train_only(clean(raw_frame()))
+
+
+def test_train_rows_all_precede_val_and_test():
+    df = assign_splits(clean(raw_frame()), test_start=pd.Timestamp("2019-05-01"))
+    assert train_only(df)["ts"].max() < df.loc[df["split"] != "train", "ts"].min()

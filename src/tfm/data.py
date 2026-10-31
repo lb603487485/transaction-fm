@@ -1,7 +1,26 @@
 """Step 1: load Sparkov, strip PII, sort by card and time, split by time, basic EDA.
 
-Output is one parquet with a ``split`` column (train / val / test) so later steps
-can read a card's full history while training only on train-period rows.
+Train / val / test isolation
+----------------------------
+The split is by TIME, not by file, and it is written into every row as a
+``split`` column:
+
+    train : ts <  test_start - 30 days      (fit everything here)
+    val   : test_start - 30 days <= ts < test_start   (choose checkpoints and thresholds)
+    test  : ts >= test_start                (evaluated once, at the end)
+
+``test_start`` is the first timestamp in fraudTest.csv, so "test" is exactly the
+Kaggle test file; the boundary is recorded in results/01_data.json.
+
+All three splits live in ONE parquet on purpose: a test-period transaction must
+be able to see the same card's earlier (train-period) history, exactly as a
+production scorer would. That direction (test looks back) is not leakage. The
+forbidden direction (anything fitted on test rows, or a train row seeing a
+later row) is blocked in code, not by file layout:
+
+* every fit-style function in later steps calls ``assert_train_only`` first;
+* history windows are built backward in time only;
+* model selection reads val, never test.
 """
 from __future__ import annotations
 
@@ -42,11 +61,29 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def assign_splits(df: pd.DataFrame, test_start: pd.Timestamp, val_days: int = 30) -> pd.DataFrame:
-    """test = rows at or after test_start; val = the val_days before it; train = everything earlier."""
+    """Label each row train / val / test by time. test = at or after test_start (the fraudTest.csv
+    period); val = the val_days just before it; train = everything earlier. Nothing is dropped and
+    nothing is shuffled: the card's time order is preserved so later rows can look back."""
     val_start = test_start - pd.Timedelta(days=val_days)
     df = df.copy()
     df["split"] = np.where(df["ts"] >= test_start, "test", np.where(df["ts"] >= val_start, "val", "train"))
     return df
+
+
+def assert_train_only(df: pd.DataFrame, what: str = "this step") -> None:
+    """Guard used by every fit-style function in later steps (bin edges, vocabulary, merchant
+    top-N, scalers, models). Raises if a single val or test row is present, so test isolation
+    is enforced where learning happens rather than by file layout."""
+    if "split" not in df.columns:
+        raise ValueError(f"{what}: dataframe has no split column; run assign_splits first")
+    bad = df.loc[df["split"] != "train", "split"].value_counts()
+    if len(bad):
+        raise ValueError(f"{what} must be fit on train rows only; found {bad.to_dict()}")
+
+
+def train_only(df: pd.DataFrame) -> pd.DataFrame:
+    """The rows anything may be fitted on."""
+    return df[df["split"] == "train"]
 
 
 def eda_stats(df: pd.DataFrame) -> dict:

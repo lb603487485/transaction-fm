@@ -38,6 +38,12 @@ MyDrive/Colab Notebooks/tfm/          (ROOT in the notebooks)
   results/             metrics json and png, copied into results/ here by the notebook and pushed
 ```
 
+## Train / val / test isolation
+
+Split by time, written into every row as a `split` column: train is everything before the last 30 days of the Kaggle train period, val is those 30 days (checkpoint and threshold selection), test is the Kaggle test file (`fraudTest.csv`, scored once at the end). The boundaries are saved in `results/metrics/01_data.json`.
+
+All three splits are kept in one parquet so that a test-period transaction can see the same card's earlier history, as a production scorer would. Leakage in the other direction is blocked in code rather than by file layout: every fit-style function (bin edges, vocabulary, merchant top-N, XGBoost) begins with `assert_train_only`, history windows only look backward, and model selection reads val only. See the docstring at the top of `src/tfm/data.py`.
+
 ## Training on free Colab without losing work
 
 Colab disconnects (idle timeout, 12 h cap, GPU quota) cannot be prevented. The runs are built so a disconnect costs at most 500 steps:
