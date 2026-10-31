@@ -2,28 +2,29 @@
 
 Notebooks stay thin: mount Drive, import `tfm`, call a function, plot. Any logic longer than about 20 lines moves into `src/tfm` so it can be tested and reviewed.
 
-No GitHub credentials ever go to Colab. The repo stays private; code reaches Colab by hand through Drive, and results come back the same way.
-
-## Getting code to Colab
-
-Drive folder `MyDrive/tfm/code/tfm/` holds a copy of `src/tfm/*.py`. After any change on the laptop, drag the changed `.py` files into that Drive folder (web UI, overwrite). Nothing else from the repo is needed on Colab.
+Colab pulls the repo with a **read-only, single-repo** fine-grained GitHub token (Contents: read only, 30-day expiry) stored in Colab Secrets as `GH_TOKEN`. Colab never has write access; results come back through Drive and are committed from the laptop.
 
 ## Notebooks
 
 | File | Step | What it does |
 |---|---|---|
-| `00_setup.ipynb` | setup | mount Drive, import `tfm`, create the Drive folders, check GPU and data |
+| `00_setup.ipynb` | setup | mount Drive, clone or pull the repo, install, create the Drive folders, check GPU and data |
 
 Upload a notebook to Colab with File -> Upload notebook, or copy it to Drive and open it with Colab. Notebooks are committed with outputs cleared (Edit -> Clear all outputs before downloading back).
 
-## Cell 1, every session: mount Drive, import the package
+## Cell 1, every session: mount Drive, pull the repo, install
 
 ```python
-import sys
-from google.colab import drive
+import os
+from google.colab import drive, userdata
 drive.mount("/content/drive")
-sys.path.insert(0, "/content/drive/MyDrive/tfm/code")
-%pip install -q datasets xgboost
+tok = userdata.get("GH_TOKEN")
+if not os.path.exists("/content/transaction-fm"):
+    !git clone -q https://{tok}@github.com/lb603487485/transaction-fm.git /content/transaction-fm
+else:
+    !cd /content/transaction-fm && git pull -q
+%pip install -q -e /content/transaction-fm
+%cd /content/transaction-fm
 import tfm
 print("tfm ok")
 ```
