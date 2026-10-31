@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tfm"
+version = "0.0.1"
+description = "Mini Transaction Foundation Model: tokenizer, GPT-2 pretraining, fraud fine-tuning, XGBoost baseline, validator checks"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,25 @@
+# data and model artifacts live in Google Drive, never here
+data/
+*.npy
+*.npz
+*.parquet
+*.csv
+*.pt
+*.pth
+*.bin
+*.safetensors
+checkpoint-*/
+runs/
+wandb/
+
+# python
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.venv/
+
+# secrets and local
+.env
+.DS_Store
+.claude/settings.local.json
+.ipynb_checkpoints/
