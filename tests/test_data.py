@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from tfm.data import PII_COLUMNS, assert_train_only, assign_splits, clean, eda_stats, run, train_only
+from tfm.data import PII_COLUMNS, assert_train_only, assign_splits, card_table, clean, eda_stats, run, train_only
 
 RAW_COLUMNS = [
     "Unnamed: 0", "trans_date_trans_time", "cc_num", "merchant", "category", "amt", "first", "last",
@@ -86,6 +86,8 @@ def test_run_writes_parquet_and_json(tmp_path):
     assert (res / "01_data.json").exists()
     back = pd.read_parquet(out / "transactions.parquet")
     assert len(back) == 120 and "split" in back.columns
+    cards = pd.read_parquet(out / "cards.parquet")
+    assert len(cards) == 3 and set(cards.columns) == {"card_id", "gender", "age_bucket", "state", "city_pop_bucket"}
     assert stats["test_start"] == str(pd.read_csv(raw / "fraudTest.csv")["trans_date_trans_time"].min())
 
 
@@ -103,3 +105,19 @@ def test_assert_train_only_blocks_val_and_test_rows():
 def test_train_rows_all_precede_val_and_test():
     df = assign_splits(clean(raw_frame()), test_start=pd.Timestamp("2019-05-01"))
     assert train_only(df)["ts"].max() < df.loc[df["split"] != "train", "ts"].min()
+
+
+def test_card_table_one_row_per_card_with_matching_card_id():
+    raw = raw_frame()
+    raw.loc[raw["cc_num"] == 3333, ["gender", "dob", "state", "city_pop"]] = ["M", "1950-06-15", "QC", 2_000_000]
+    cards = card_table(raw, as_of=pd.Timestamp("2020-06-21"))
+    df = clean(raw)
+    assert len(cards) == 3 and cards["card_id"].is_unique
+    # card_id must be the same mapping clean() uses: cc_num 3333 is the largest, so card_id 2
+    row = cards.set_index("card_id").loc[2]
+    assert row["gender"] == "M" and row["state"] == "QC"
+    assert row["age_bucket"] == "65+" and row["city_pop_bucket"] == "1M+"
+    assert set(cards["card_id"]) == set(df["card_id"])
+    assert cards.set_index("card_id").loc[0, "age_bucket"] == "25-34"   # born 1990, as of 2020
+    assert cards.set_index("card_id").loc[0, "city_pop_bucket"] == "<10k"
+    assert cards.notna().all().all()

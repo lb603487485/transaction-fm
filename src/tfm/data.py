@@ -21,6 +21,12 @@ later row) is blocked in code, not by file layout:
 * every fit-style function in later steps calls ``assert_train_only`` first;
 * history windows are built backward in time only;
 * model selection reads val, never test.
+
+Card-level side table
+---------------------
+``card_table`` keeps gender, age bucket, state and city-size bucket, one row per card, in
+processed/cards.parquet. It is never joined into a model input or fit; step 6 joins it to the
+scored test rows to compare metrics across groups (subgroup / fairness check).
 """
 from __future__ import annotations
 
@@ -58,6 +64,27 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     df["dist_km"] = _haversine_km(df["lat"].values, df["long"].values, df["merch_lat"].values, df["merch_long"].values)
     df = df.sort_values(["card_id", "ts"], kind="mergesort").reset_index(drop=True)
     return df[KEEP]
+
+
+AGE_EDGES = [0, 25, 35, 45, 55, 65, 200]
+AGE_LABELS = ["<25", "25-34", "35-44", "45-54", "55-64", "65+"]
+CITY_POP_EDGES = [0, 10_000, 100_000, 1_000_000, 10**9]
+CITY_POP_LABELS = ["<10k", "10k-100k", "100k-1M", "1M+"]
+
+
+def card_table(raw: pd.DataFrame, as_of: pd.Timestamp) -> pd.DataFrame:
+    """One row per card with the cardholder attributes clean() drops, bucketed. Read only by
+    step 6 for subgroup metrics; never a model input. card_id is the same dense mapping clean()
+    produces (factorize on sorted cc_num), so it joins onto transactions.parquet."""
+    first = raw.sort_values("cc_num").groupby("cc_num", sort=True)[["gender", "dob", "state", "city_pop"]].first()
+    age = (pd.Timestamp(as_of) - pd.to_datetime(first["dob"])).dt.days / 365.25
+    return pd.DataFrame({
+        "card_id": np.arange(len(first)),
+        "gender": first["gender"].values,
+        "age_bucket": pd.cut(age, AGE_EDGES, labels=AGE_LABELS, right=False).astype(str).values,
+        "state": first["state"].values,
+        "city_pop_bucket": pd.cut(first["city_pop"], CITY_POP_EDGES, labels=CITY_POP_LABELS, right=False).astype(str).values,
+    })
 
 
 def assign_splits(df: pd.DataFrame, test_start: pd.Timestamp, val_days: int = 30) -> pd.DataFrame:
@@ -113,12 +140,14 @@ def eda_stats(df: pd.DataFrame) -> dict:
 
 
 def save_outputs(df: pd.DataFrame, stats: dict, out_dir: Path, results_dir: Path,
-                 test_start: pd.Timestamp, val_days: int = 30) -> dict:
-    """Write processed/transactions.parquet and results/01_data.json; return stats with the boundaries."""
+                 test_start: pd.Timestamp, val_days: int = 30, cards: pd.DataFrame | None = None) -> dict:
+    """Write processed/transactions.parquet (+ cards.parquet) and results/01_data.json; return stats with the boundaries."""
     out_dir, results_dir = Path(out_dir), Path(results_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     results_dir.mkdir(parents=True, exist_ok=True)
     df.to_parquet(out_dir / "transactions.parquet", index=False)
+    if cards is not None:
+        cards.to_parquet(out_dir / "cards.parquet", index=False)
     stats = dict(stats, test_start=str(test_start), val_start=str(test_start - pd.Timedelta(days=val_days)))
     (results_dir / "01_data.json").write_text(json.dumps(stats, indent=2))
     return stats
@@ -128,4 +157,4 @@ def run(raw_dir: Path, out_dir: Path, results_dir: Path, val_days: int = 30) -> 
     """Step 1 end to end: raw csv -> processed/transactions.parquet + results/01_data.json."""
     raw, test_start = load_raw(raw_dir)
     df = assign_splits(clean(raw), test_start=test_start, val_days=val_days)
-    return save_outputs(df, eda_stats(df), out_dir, results_dir, test_start, val_days)
+    return save_outputs(df, eda_stats(df), out_dir, results_dir, test_start, val_days, cards=card_table(raw, as_of=test_start))

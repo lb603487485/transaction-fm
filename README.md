@@ -32,6 +32,7 @@ MyDrive/Colab Notebooks/tfm/          (ROOT in the notebooks)
   notebooks/           the .ipynb files, opened from Drive with Colab; synced back here by the push cell
   data/raw/            Sparkov csv
   data/processed/      transactions.parquet (split column), token arrays (.npy), vocab.json, bin_edges.json
+                       cards.parquet: gender, age_bucket, state, city_pop_bucket per card; read only by step 6 subgroup checks
   pretrain/            checkpoint-N/ ..., best/
   finetune/seed0..2/   checkpoint-N/ ..., best/
   xgb/                 saved boosters
