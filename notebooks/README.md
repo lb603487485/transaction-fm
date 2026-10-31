@@ -1,22 +1,23 @@
 # Colab notebooks
 
-Notebooks stay thin: mount, pull, install, call a function from `src/tfm`, plot. Any logic longer than about 20 lines moves into `src/tfm` so it can be tested and reviewed.
+Notebooks stay thin: mount Drive, import `tfm`, call a function, plot. Any logic longer than about 20 lines moves into `src/tfm` so it can be tested and reviewed.
 
-## Cell 1, every session: mount Drive, pull the repo, install
+No GitHub credentials ever go to Colab. The repo stays private; code reaches Colab by hand through Drive, and results come back the same way.
 
-Store a GitHub token with repo scope in Colab's Secrets panel (left sidebar, key icon) under the name `GH_TOKEN`. Never paste it into a cell.
+## Getting code to Colab
+
+Drive folder `MyDrive/tfm/code/tfm/` holds a copy of `src/tfm/*.py`. After any change on the laptop, drag the changed `.py` files into that Drive folder (web UI, overwrite). Nothing else from the repo is needed on Colab.
+
+## Cell 1, every session: mount Drive, import the package
 
 ```python
-import os
-from google.colab import drive, userdata
+import sys
+from google.colab import drive
 drive.mount("/content/drive")
-tok = userdata.get("GH_TOKEN")
-if not os.path.exists("/content/transaction-fm"):
-    !git clone https://{tok}@github.com/lb603487485/transaction-fm.git /content/transaction-fm
-else:
-    !cd /content/transaction-fm && git pull
-%pip install -q -e /content/transaction-fm
-%cd /content/transaction-fm
+sys.path.insert(0, "/content/drive/MyDrive/tfm/code")
+%pip install -q datasets xgboost
+import tfm
+print("tfm ok")
 ```
 
 ## Cell 2, pretraining: resume if a checkpoint exists
@@ -41,13 +42,9 @@ trainer.save_model(f"{OUT}/best")
 
 `model`, `train_ds`, `val_ds` and `collator` come from `tfm.pretrain` once step 3 exists.
 
-## Cell 3, push small results back
+## Getting results back
 
-```python
-!cp /content/drive/MyDrive/tfm/pretrain/best/trainer_state.json results/metrics/pretrain_seed0_state.json
-!git config user.email "linboyy@hotmail.com" && git config user.name "Bo Lin"
-!git add results && git commit -m "pretrain seed0 results" && git push
-```
+Every step writes its small outputs (metrics json, png) to `MyDrive/tfm/results/`. Download them from the Drive web UI into `results/metrics/` and `results/figures/` in the local repo, then commit and push from the laptop.
 
 ## End of session
 
