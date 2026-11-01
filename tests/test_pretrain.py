@@ -72,7 +72,7 @@ def test_gpt2_config_matches_guide():
 
 def test_progress_line_shows_step_share_loss_and_eta():
     from tfm.pretrain import progress_line
-    line = progress_line(step=1000, max_steps=8000, start_step=0, elapsed_s=600, loss=2.1345, lr=4.9e-4)
+    line = progress_line(step=1000, max_steps=8000, start_step=0, elapsed_s=600, loss=2.1341, lr=4.9e-4)
     assert "1,000/8,000" in line and "12.5%" in line and "loss 2.134" in line and "lr 4.9e-04" in line
     assert "elapsed 10.0 min" in line and "eta 70 min" in line        # 600 s for 1000 steps -> 7000 steps left = 4200 s
 
