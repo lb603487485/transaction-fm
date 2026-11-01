@@ -10,6 +10,7 @@ Colab pulls and pushes with a **single-repo** fine-grained GitHub token (Content
 |---|---|---|
 | `00_setup.ipynb` | setup | mount Drive, clone or pull the repo, install, create the Drive folders, check GPU and data, push results and notebooks |
 | `01_data.ipynb` | 1 | one stage per cell: raw head, column fate table (constant-per-card evidence), dist_km worked example, after clean plus quality checks, card-level side table, after split with boundary rows, per-card table and one fraud burst, EDA stats, save, two charts, push |
+| `02_tokenizer.ipynb` | 2 | fit on train rows, vocab composition, bin edges in human units, six-row worked example, coverage per split, log vs linear amount bins, windows per split, save |
 
 Notebooks live in `MyDrive/Colab Notebooks/tfm/notebooks/` and are opened from Drive (right click -> Open with -> Google Colaboratory). Edits save to that Drive file. The push cell copies every notebook there back into this folder with outputs kept, so GitHub shows the frames and charts each stage produced. A new notebook written on the laptop reaches Drive automatically the next time any notebook's cell 2 runs.
 
