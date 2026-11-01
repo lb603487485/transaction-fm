@@ -4,7 +4,7 @@ Mini Transaction Foundation Model: a GPT-2 style decoder pretrained with next-to
 
 Scaled-down reproduction of the recipe in the Wells Fargo talk "What It Takes to Build Production-Grade Foundation Models in Finance" (1B parameters, 8 x H200) at about 11M parameters on one free Colab T4. The point is not the absolute score; it is testing which of the talk's claims survive at small scale.
 
-Status: steps 1 and 2 written (2026-10-31), steps 3 to 7 to follow.
+Status: steps 1 to 3 written (2026-11-01), steps 4 to 7 to follow.
 
 ## Layout
 
@@ -13,7 +13,7 @@ src/tfm/
   checkpointing.py   resume-safe Trainer settings, latest-checkpoint finder, checkpoint verifier
   data.py            step 1: load, strip PII, sort by card and time, time-based split, EDA stats
   tokenizer.py       step 2: TransactionTokenizer (fit on train only, encode, decode, save/load), make_windows
-  pretrain.py        step 3: causal LM pretraining                                       (todo)
+  pretrain.py        step 3: GPT-2 config, <BOS>-shifted examples, per-field next-token accuracy vs prior, run summary
   finetune.py        step 4: GPT2ForSequenceClassification, last-token pooling           (todo)
   baseline.py        step 5: leak-free rolling features + XGBoost                        (todo)
   evaluate.py        step 6: ablations and validator checks                              (todo)
@@ -34,7 +34,7 @@ MyDrive/Colab Notebooks/tfm/          (ROOT in the notebooks)
   data/processed/      transactions.parquet (split column); tokenizer.json (vocab, edges, config);
                        tokens_<split>.npy (n_windows x 512) and windows_<split>_meta.parquet
                        cards.parquet: gender, age_bucket, state, city_pop_bucket per card; read only by step 6 subgroup checks
-  pretrain/            checkpoint-N/ ..., best/
+  pretrain/            checkpoint-N/ (every 500 steps, newest 2 kept), best/ (lowest val loss, with its tokenizer.json)
   finetune/seed0..2/   checkpoint-N/ ..., best/
   xgb/                 saved boosters
   results/             metrics json and png, copied into results/ here by the notebook and pushed

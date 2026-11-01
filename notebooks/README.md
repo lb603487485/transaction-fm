@@ -11,6 +11,7 @@ Colab pulls and pushes with a **single-repo** fine-grained GitHub token (Content
 | `00_setup.ipynb` | setup | mount Drive, clone or pull the repo, install, create the Drive folders, check GPU and data, push results and notebooks |
 | `01_data.ipynb` | 1 | one stage per cell: raw head, column fate table (constant-per-card evidence), dist_km worked example, after clean plus quality checks, card-level side table, after split with boundary rows, per-card table and one fraud burst, EDA stats, save, two charts, push |
 | `02_tokenizer.ipynb` | 2 | fit on train rows, special tokens and vocab composition, bin edges in human units, six-row worked example, random spot checks plus a 5,000-row machine check of decode against raw values, coverage per split, the two switches (log vs linear, with and without DT) and the binning trade-off number, windows per split, save and the json contents |
+| `03_pretrain.ipynb` | 3 | load the step-2 windows, show one example as the model sees it (`<BOS>` shift, pad mask, -100 labels), GPT-2 config and parameter count, the per-field prior, train or resume with eval and save every 500 steps on Drive, verify every checkpoint, save `best/` with `tokenizer.json`, loss curves, per-field next-token accuracy vs prior, perplexity, `03_pretrain.json` |
 
 Notebooks live in `MyDrive/Colab Notebooks/tfm/notebooks/` and are opened from Drive (right click -> Open with -> Google Colaboratory). Edits save to that Drive file. The push cell copies every notebook there back into this folder with outputs kept, so GitHub shows the frames and charts each stage produced. A new notebook written on the laptop reaches Drive automatically the next time any notebook's cell 2 runs.
 
@@ -60,7 +61,7 @@ for p in sorted(Path(OUT).glob("checkpoint-*")):
 trainer.save_model(f"{OUT}/best")
 ```
 
-`model`, `train_ds`, `val_ds` and `collator` come from `tfm.pretrain` once step 3 exists.
+The full version, with `compute_metrics` for per-field accuracy, is Stage 3c of `03_pretrain.ipynb`; `model` and the datasets come from `tfm.pretrain`.
 
 ## Getting results back
 
