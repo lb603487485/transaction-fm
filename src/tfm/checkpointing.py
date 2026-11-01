@@ -59,14 +59,19 @@ def training_args(out_dir: str, seed: int = 0, **overrides):
     save_total_limit=2 keeps the latest checkpoint and the best one; the best is
     never deleted by the limit.
     """
+    import dataclasses
+
     from transformers import TrainingArguments  # imported here so tests run without torch
 
+    # transformers 4.x: warmup_ratio=0.05; transformers 5.x removed it and takes a float warmup_steps in [0, 1) as the ratio
+    names = {f.name for f in dataclasses.fields(TrainingArguments)}
+    warmup = {"warmup_ratio": 0.05} if "warmup_ratio" in names else {"warmup_steps": 0.05}
     args = dict(
         output_dir=out_dir,
         seed=seed,
         learning_rate=5e-4,
         lr_scheduler_type="cosine",
-        warmup_ratio=0.05,
+        **warmup,
         num_train_epochs=8,
         eval_strategy="steps",
         eval_steps=500,

@@ -1,7 +1,9 @@
 import json
 from pathlib import Path
 
-from tfm.checkpointing import find_latest_checkpoint, verify_checkpoint
+import pytest
+
+from tfm.checkpointing import find_latest_checkpoint, training_args, verify_checkpoint
 
 REQUIRED = ["model.safetensors", "optimizer.pt", "scheduler.pt", "trainer_state.json"]
 
@@ -47,3 +49,10 @@ def test_verify_reports_missing_files_and_step_mismatch(tmp_path):
     d2 = make_ckpt(tmp_path, 1000, state_step=900)
     problems2 = verify_checkpoint(d2)
     assert any("global_step" in p for p in problems2)
+
+
+def test_training_args_warmup_is_five_percent_on_the_installed_transformers(tmp_path):
+    pytest.importorskip("transformers")
+    a = training_args(str(tmp_path), seed=0)
+    assert getattr(a, "warmup_ratio", None) == 0.05 or a.warmup_steps == 0.05   # 4.x field or the 5.x float ratio
+    assert a.save_steps == 500 and a.eval_steps == 500 and a.load_best_model_at_end and a.metric_for_best_model == "eval_loss"
