@@ -68,3 +68,24 @@ def test_gpt2_config_matches_guide():
     assert cfg.pad_token_id == PAD and cfg.bos_token_id == BOS and cfg.eos_token_id == BOS
     model = transformers.GPT2LMHeadModel(cfg)
     assert 10_000_000 < sum(p.numel() for p in model.parameters()) < 12_000_000
+
+
+def test_progress_line_shows_step_share_loss_and_eta():
+    from tfm.pretrain import progress_line
+    line = progress_line(step=1000, max_steps=8000, start_step=0, elapsed_s=600, loss=2.1345, lr=4.9e-4)
+    assert "1,000/8,000" in line and "12.5%" in line and "loss 2.134" in line and "lr 4.9e-04" in line
+    assert "elapsed 10.0 min" in line and "eta 70 min" in line        # 600 s for 1000 steps -> 7000 steps left = 4200 s
+
+
+def test_progress_line_eta_counts_only_this_session_after_resume():
+    from tfm.pretrain import progress_line
+    line = progress_line(step=4500, max_steps=8000, start_step=4000, elapsed_s=300, loss=1.0, lr=1e-4)
+    assert "eta 35 min" in line                                        # 300 s for 500 steps -> 3500 left = 2100 s
+
+
+def test_eval_line_shows_perplexity_and_per_field_accuracy():
+    from tfm.pretrain import eval_line
+    logs = {"eval_loss": 1.0, "eval_acc_all": 0.61, "eval_acc_CAT": 0.55, "eval_acc_MER": 0.3, "eval_runtime": 12.0}
+    line = eval_line(step=500, logs=logs)
+    assert line.startswith("eval @ 500") and "val loss 1.0000" in line and "ppl 2.72" in line
+    assert "all 0.61" in line and "CAT 0.55" in line and "MER 0.30" in line and "runtime" not in line

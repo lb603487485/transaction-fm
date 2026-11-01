@@ -130,3 +130,41 @@ def compute_metrics_fn(fields: np.ndarray):
         return {f"acc_{k}": v for k, v in per_field_accuracy(pred, lab, fields).items()}
 
     return compute_metrics
+
+
+# ---- plain-text progress (the HF widget is lost on reconnect and does not render on GitHub) ----------------
+def progress_line(step: int, max_steps: int, start_step: int, elapsed_s: float, loss: float, lr: float) -> str:
+    done = step - start_step
+    eta_s = elapsed_s / done * (max_steps - step) if done > 0 else float("nan")
+    return (f"step {step:,}/{max_steps:,}  {100 * step / max_steps:.1f}%  loss {loss:.3f}  lr {lr:.1e}  "
+            f"elapsed {elapsed_s / 60:.1f} min  eta {eta_s / 60:.0f} min")
+
+
+def eval_line(step: int, logs: dict) -> str:
+    accs = "  ".join(f"{k[len('eval_acc_'):]} {v:.2f}" for k, v in logs.items() if k.startswith("eval_acc_"))
+    return f"eval @ {step:,}  val loss {logs['eval_loss']:.4f}  ppl {float(np.exp(logs['eval_loss'])):.2f}  acc: {accs}"
+
+
+def print_progress_callback():
+    """A TrainerCallback that prints one line per logging step, per eval and per checkpoint save."""
+    import time
+
+    from transformers import TrainerCallback
+
+    class PrintProgress(TrainerCallback):
+        def on_train_begin(self, args, state, control, **kw):
+            self.t0, self.start_step = time.time(), state.global_step
+            print(f"training: {state.max_steps:,} steps total, starting at step {state.global_step:,}, "
+                  f"eval and save every {args.save_steps} steps", flush=True)
+
+        def on_log(self, args, state, control, logs=None, **kw):
+            if logs and "loss" in logs:
+                print(progress_line(state.global_step, state.max_steps, self.start_step, time.time() - self.t0,
+                                    logs["loss"], logs.get("learning_rate", float("nan"))), flush=True)
+            if logs and "eval_loss" in logs:
+                print(eval_line(state.global_step, logs), flush=True)
+
+        def on_save(self, args, state, control, **kw):
+            print(f"saved checkpoint-{state.global_step:,} to Drive", flush=True)
+
+    return PrintProgress()
