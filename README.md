@@ -4,7 +4,7 @@ Mini Transaction Foundation Model: a GPT-2 style decoder pretrained with next-to
 
 Scaled-down reproduction of the recipe in the Wells Fargo talk "What It Takes to Build Production-Grade Foundation Models in Finance" (1B parameters, 8 x H200) at about 11M parameters on one free Colab T4. The point is not the absolute score; it is testing which of the talk's claims survive at small scale.
 
-Status: steps 1 to 3 run on Colab, step 4 written (2026-11-01), steps 5 to 7 to follow.
+Status: steps 1 to 4 run on Colab, step 5 written (2026-11-02), steps 6 and 7 to follow.
 
 ## Layout
 
@@ -16,7 +16,7 @@ src/tfm/
   pretrain.py        step 3: GPT-2 config, <BOS>-shifted examples, per-field next-token accuracy vs prior, run summary
   finetune.py        step 4: history + current examples (train sampled, val/test not), GPT2ForSequenceClassification, last-token pooling
   metrics.py         PR-AUC, ROC-AUC, recall and card discovery at a fixed alert rate, FP ratio, sampling correction, mean/sd over seeds
-  baseline.py        step 5: leak-free rolling features + XGBoost                        (todo)
+  baseline.py        step 5: 29 leak-free features (rolling windows closed on the left, cumsum minus current), XGBoost with early stopping on val, grid
   evaluate.py        step 6: ablations and validator checks                              (todo)
 configs/             one yaml per run (seed, history length, bin counts)
 results/metrics/     small json files pushed back from Colab
@@ -37,7 +37,7 @@ MyDrive/Colab Notebooks/tfm/          (ROOT in the notebooks)
                        cards.parquet: gender, age_bucket, state, city_pop_bucket per card; read only by step 6 subgroup checks
   pretrain/            checkpoint-N/ (every 500 steps, newest 2 kept), best/ (lowest val loss, with its tokenizer.json)
   finetune/<init>_H<H>/seed<k>/   checkpoint-N/ ..., test_scores.npy   (init = pretrained | scratch)
-  xgb/                 saved boosters
+  baseline/<variant>/seed<k>/     test_scores.npy   (variant = full | current, the 29-feature and 6-feature XGBoost)
   results/             metrics json and png, copied into results/ here by the notebook and pushed
 ```
 
@@ -58,6 +58,10 @@ Colab disconnects (idle timeout, 12 h cap, GPU quota) cannot be prevented. The r
 5. Keep each run under 2 hours and call `drive.flush_and_unmount()` at the end of a session so Drive finishes syncing.
 
 See `notebooks/README.md` for the cells.
+
+## Feature engineering cost (step 5)
+
+The guide asks for the cost of the hand-built features, because "no feature engineering" is one of the talk's selling points. Two numbers: compute time is measured and stored as `feature_seconds` in `results/metrics/05_baseline.json`; authoring time is from the commit log: `baseline.py` (29 features in about 60 lines) and its 10 tests were written in one sitting on 2026-11-02, under an hour, with an AI coding assistant. That number does not refute the talk's claim, which is about maintaining hundreds of features over years; it is recorded so the report can say what this baseline cost.
 
 ## Local development
 
