@@ -1,5 +1,7 @@
 # data and model artifacts live in Google Drive, never here
 data/
+# local copy of the Drive folder for laptop runs (TFM_ROOT)
+tfm-drive/
 *.npy
 *.npz
 *.parquet
@@ -23,3 +25,5 @@ __pycache__/
 .DS_Store
 .claude/settings.local.json
 .ipynb_checkpoints/
+# created by Anaconda's Jupyter on launch
+anaconda_projects/
