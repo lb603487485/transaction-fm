@@ -61,6 +61,8 @@ def training_args(out_dir: str, seed: int = 0, **overrides):
     """
     import dataclasses
 
+    from tfm import runtime
+
     from transformers import TrainingArguments  # imported here so tests run without torch
 
     # transformers 4.x: warmup_ratio=0.05; transformers 5.x removed it and takes a float warmup_steps in [0, 1) as the ratio
@@ -82,7 +84,7 @@ def training_args(out_dir: str, seed: int = 0, **overrides):
         metric_for_best_model="eval_loss",
         greater_is_better=False,
         logging_steps=50,
-        fp16=True,
+        fp16=runtime.fp16(),          # mixed precision on CUDA only; CPU and Apple MPS run fp32
         report_to="none",
     )
     args.update(overrides)

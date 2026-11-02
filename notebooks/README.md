@@ -17,31 +17,50 @@ Colab pulls and pushes with a **single-repo** fine-grained GitHub token (Content
 
 Notebooks live in `MyDrive/Colab Notebooks/tfm/notebooks/` and are opened from Drive (right click -> Open with -> Google Colaboratory). Edits save to that Drive file. The push cell copies every notebook there back into this folder with outputs kept, so GitHub shows the frames and charts each stage produced. A new notebook written on the laptop reaches Drive automatically the next time any notebook's cell 2 runs.
 
-## Cell 1, every session: mount Drive, pull the repo, sync new notebooks to Drive
+## Cell 1, every session: where am I, mount Drive on Colab, pull the repo, sync new notebooks to Drive
 
 ```python
 import os, sys, glob, shutil
-from google.colab import drive, userdata
-drive.mount("/content/drive")
-ROOT = "/content/drive/MyDrive/Colab Notebooks/tfm"
-tok = userdata.get("GH_TOKEN")
-if not os.path.exists("/content/transaction-fm"):
-    !git clone -q https://{tok}@github.com/lb603487485/transaction-fm.git /content/transaction-fm
-else:
-    !cd /content/transaction-fm && git pull -q
-%pip install -q datasets xgboost
-%cd /content/transaction-fm
-sys.path.insert(0, "/content/transaction-fm/src")
-os.makedirs(f"{ROOT}/notebooks", exist_ok=True)
-for f in glob.glob("notebooks/*.ipynb"):          # new notebooks from the repo appear in Drive
-    dst = f"{ROOT}/notebooks/{os.path.basename(f)}"
-    if not os.path.exists(dst):
-        shutil.copy(f, dst); print("new notebook in Drive:", os.path.basename(f))
-import tfm
-print("tfm ok")
+try:
+    from google.colab import drive, userdata                      # Colab: mount Drive, pull the repo, sync new notebooks to Drive
+    drive.mount("/content/drive")
+    tok = userdata.get("GH_TOKEN")
+    if not os.path.exists("/content/transaction-fm"):
+        !git clone -q https://{tok}@github.com/lb603487485/transaction-fm.git /content/transaction-fm
+    else:
+        !cd /content/transaction-fm && git pull -q
+    %pip install -q datasets xgboost
+    %cd /content/transaction-fm
+except ImportError:                                               # laptop: this notebook is the repo copy; data under $TFM_ROOT
+    here = os.getcwd()
+    while not os.path.isdir(os.path.join(here, "src", "tfm")):
+        here = os.path.dirname(here)
+    %cd {here}
+sys.path.insert(0, os.path.abspath("src"))
+from tfm.runtime import root, describe, on_colab
+ROOT = root()
+if on_colab():
+    for f in glob.glob("notebooks/*.ipynb"):                      # new notebooks from the repo appear in Drive
+        dst = f"{ROOT}/notebooks/{os.path.basename(f)}"
+        if not os.path.exists(dst):
+            shutil.copy(f, dst); print("new notebook in Drive:", os.path.basename(f))
+print("tfm ok |", describe(), "| ROOT =", ROOT)
 ```
 
 The same cell is the second cell of every notebook, so whichever notebook is opened first pulls the latest code and drops any new notebook into `ROOT/notebooks/`. Existing Drive notebooks are never overwritten by this cell; they flow the other way, Drive -> repo, through the push cell.
+
+`tfm.runtime` decides the rest at run time: `root()` is the Drive folder on Colab and `$TFM_ROOT` on a laptop; `gpu()` asks `nvidia-smi`, so XGBoost gets `device="cuda"` or `"cpu"` and the Trainer gets `fp16` only on CUDA. `describe()` goes into every run's json so results from different machines can be told apart.
+
+## Running a notebook on the laptop (no Colab quota, no GPU)
+
+Steps 1, 2 and 5 need no GPU. Make a local folder with the same sub-paths as Drive's `tfm/` and download into it what the step reads (for step 5: `data/processed/transactions.parquet` and `finetune/pretrained_H12/seed0/test_scores.npy`; `04_finetune.json` is read from `results/metrics/` in the repo if the local `results/` has no copy). Then, from the repo:
+
+```
+pip install -r requirements.txt            # torch and transformers are only needed for steps 3, 4, 6
+TFM_ROOT=~/tfm-drive jupyter notebook notebooks/05_baseline.ipynb
+```
+
+Run top to bottom. The notebook file being run is the repo copy, so its outputs land in the repo directly; the push cell copies the result files into `results/` and stops, and the commit is made from the terminal. Before the next Colab session, delete the Drive copy of any notebook whose code changed on the laptop, so cell 2 brings the new one in.
 
 ## Cell 2, pretraining: resume if a checkpoint exists
 

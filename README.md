@@ -59,6 +59,10 @@ Colab disconnects (idle timeout, 12 h cap, GPU quota) cannot be prevented. The r
 
 See `notebooks/README.md` for the cells.
 
+## Colab or laptop, GPU or CPU
+
+`src/tfm/runtime.py` decides at run time: `root()` is the Drive folder on Colab and `$TFM_ROOT` on a laptop (same sub-folders); `gpu()` asks `nvidia-smi`, so XGBoost runs on `cuda` or `cpu` and the Trainer uses `fp16` only on CUDA (CPU and Apple MPS run fp32). Every run json carries `runtime` (`describe()`: where, gpu, device, fp16, machine). Saved checkpoints are fp32 safetensors, so a model trained on the T4 loads unchanged on a laptop; fp16 is a property of the run that produced a result, not of the weights. Steps 1, 2 and 5 are CPU work and run on a laptop in minutes; steps 3, 4 and 6 want the T4, and arms of one ablation should run on one kind of machine.
+
 ## Feature engineering cost (step 5)
 
 The guide asks for the cost of the hand-built features, because "no feature engineering" is one of the talk's selling points. Two numbers: compute time is measured and stored as `feature_seconds` in `results/metrics/05_baseline.json`; authoring time is from the commit log: `baseline.py` (29 features in about 60 lines) and its 10 tests were written in one sitting on 2026-11-02, under an hour, with an AI coding assistant. That number does not refute the talk's claim, which is about maintaining hundreds of features over years; it is recorded so the report can say what this baseline cost.
