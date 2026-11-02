@@ -53,11 +53,11 @@ The same cell is the second cell of every notebook, so whichever notebook is ope
 
 ## Running a notebook on the laptop (no Colab quota, no GPU)
 
-Steps 1, 2 and 5 need no GPU. Make a local folder with the same sub-paths as Drive's `tfm/` and download into it what the step reads (for step 5: `data/processed/transactions.parquet` and `finetune/pretrained_H12/seed0/test_scores.npy`; `04_finetune.json` is read from `results/metrics/` in the repo if the local `results/` has no copy). Then, from the repo:
+Steps 1, 2 and 5 need no GPU. Download from Drive's `tfm/` what the step reads, keeping the same sub-paths, straight into the repo root (for step 5: `data/processed/transactions.parquet` and `finetune/pretrained_H12/seed0/test_scores.npy`; `data/`, `pretrain/`, `finetune/`, `baseline/` are gitignored, and `04_finetune.json` is read from `results/metrics/` when `results/` has no copy). Then, from the repo:
 
 ```
 pip install -r requirements.txt            # torch and transformers are only needed for steps 3, 4, 6
-TFM_ROOT=~/tfm-drive jupyter notebook notebooks/05_baseline.ipynb
+TFM_ROOT=$PWD jupyter notebook notebooks/05_baseline.ipynb
 ```
 
 Run top to bottom. The notebook file being run is the repo copy, so its outputs land in the repo directly; the push cell copies the result files into `results/` and stops, and the commit is made from the terminal. Before the next Colab session, delete the Drive copy of any notebook whose code changed on the laptop, so cell 2 brings the new one in.

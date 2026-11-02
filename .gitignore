@@ -1,7 +1,13 @@
 # data and model artifacts live in Google Drive, never here
 data/
-# local copy of the Drive folder for laptop runs (TFM_ROOT)
-tfm-drive/
+# local mirror of Drive's tfm/ for laptop runs (TFM_ROOT=$PWD): the big folders,
+# plus the raw run output the notebooks write to results/ before the push cell
+# copies the kept json/png into results/metrics and results/figures
+pretrain/
+finetune/
+baseline/
+/results/*.json
+/results/*.png
 *.npy
 *.npz
 *.parquet

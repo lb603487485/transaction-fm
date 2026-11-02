@@ -61,7 +61,7 @@ See `notebooks/README.md` for the cells.
 
 ## Colab or laptop, GPU or CPU
 
-`src/tfm/runtime.py` decides at run time: `root()` is the Drive folder on Colab and `$TFM_ROOT` on a laptop (same sub-folders); `gpu()` asks `nvidia-smi`, so XGBoost runs on `cuda` or `cpu` and the Trainer uses `fp16` only on CUDA (CPU and Apple MPS run fp32). Every run json carries `runtime` (`describe()`: where, gpu, device, fp16, machine). Saved checkpoints are fp32 safetensors, so a model trained on the T4 loads unchanged on a laptop; fp16 is a property of the run that produced a result, not of the weights. Steps 1, 2 and 5 are CPU work and run on a laptop in minutes; steps 3, 4 and 6 want the T4, and arms of one ablation should run on one kind of machine.
+`src/tfm/runtime.py` decides at run time: `root()` is the Drive folder on Colab and `$TFM_ROOT` on a laptop, normally the repo itself (`TFM_ROOT=$PWD`): the Drive sub-folders `data/`, `pretrain/`, `finetune/`, `baseline/` sit at the repo root and are gitignored, and run output lands in `results/` next to the tracked `metrics/` and `figures/`; `gpu()` asks `nvidia-smi`, so XGBoost runs on `cuda` or `cpu` and the Trainer uses `fp16` only on CUDA (CPU and Apple MPS run fp32). Every run json carries `runtime` (`describe()`: where, gpu, device, fp16, machine). Saved checkpoints are fp32 safetensors, so a model trained on the T4 loads unchanged on a laptop; fp16 is a property of the run that produced a result, not of the weights. Steps 1, 2 and 5 are CPU work and run on a laptop in minutes; steps 3, 4 and 6 want the T4, and arms of one ablation should run on one kind of machine.
 
 ## Feature engineering cost (step 5)
 
