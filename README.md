@@ -4,7 +4,7 @@ Mini Transaction Foundation Model: a GPT-2 style decoder pretrained with next-to
 
 Scaled-down reproduction of the recipe in the Wells Fargo talk "What It Takes to Build Production-Grade Foundation Models in Finance" (1B parameters, 8 x H200) at about 11M parameters on one free Colab T4. The point is not the absolute score; it is testing which of the talk's claims survive at small scale.
 
-Status: steps 1 to 3 written (2026-11-01), steps 4 to 7 to follow.
+Status: steps 1 to 3 run on Colab, step 4 written (2026-11-01), steps 5 to 7 to follow.
 
 ## Layout
 
@@ -14,7 +14,8 @@ src/tfm/
   data.py            step 1: load, strip PII, sort by card and time, time-based split, EDA stats
   tokenizer.py       step 2: TransactionTokenizer (fit on train only, encode, decode, save/load), make_windows
   pretrain.py        step 3: GPT-2 config, <BOS>-shifted examples, per-field next-token accuracy vs prior, run summary
-  finetune.py        step 4: GPT2ForSequenceClassification, last-token pooling           (todo)
+  finetune.py        step 4: history + current examples (train sampled, val/test not), GPT2ForSequenceClassification, last-token pooling
+  metrics.py         PR-AUC, ROC-AUC, recall and card discovery at a fixed alert rate, FP ratio, sampling correction, mean/sd over seeds
   baseline.py        step 5: leak-free rolling features + XGBoost                        (todo)
   evaluate.py        step 6: ablations and validator checks                              (todo)
 configs/             one yaml per run (seed, history length, bin counts)
@@ -35,7 +36,7 @@ MyDrive/Colab Notebooks/tfm/          (ROOT in the notebooks)
                        tokens_<split>.npy (n_windows x 512) and windows_<split>_meta.parquet
                        cards.parquet: gender, age_bucket, state, city_pop_bucket per card; read only by step 6 subgroup checks
   pretrain/            checkpoint-N/ (every 500 steps, newest 2 kept), best/ (lowest val loss, with its tokenizer.json)
-  finetune/seed0..2/   checkpoint-N/ ..., best/
+  finetune/<init>_H<H>/seed<k>/   checkpoint-N/ ..., test_scores.npy   (init = pretrained | scratch)
   xgb/                 saved boosters
   results/             metrics json and png, copied into results/ here by the notebook and pushed
 ```
