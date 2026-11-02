@@ -1,0 +1,336 @@
+{
+  "history": 12,
+  "neg_keep_rate": 0.05,
+  "alert_rate": 0.006,
+  "n_test": 555719,
+  "n_test_fraud": 2145,
+  "runs": [
+    {
+      "name": "04_pretrained_H12_seed0",
+      "init": "pretrained",
+      "history": 12,
+      "seed": 0,
+      "neg_keep_rate": 0.05,
+      "alert_rate": 0.006,
+      "n_train_examples": 67288,
+      "n_train_fraud": 7017,
+      "best_step": 2500,
+      "val_at_best": {
+        "loss": 0.00377989886328578,
+        "pr_auc": 0.9787510078991112,
+        "roc_auc": 0.9982658911961184,
+        "recall_at_alert": 0.9570552147239264,
+        "card_discovery": 0.9811320754716981,
+        "fp_ratio": 0.07692307692307693,
+        "alert_rate": 0.006,
+        "n": 83971,
+        "n_fraud": 489,
+        "runtime": 38.8937,
+        "samples_per_second": 2158.989,
+        "steps_per_second": 8.459
+      },
+      "test": {
+        "pr_auc": 0.985963696554135,
+        "roc_auc": 0.9996228192872183,
+        "recall_at_alert": 0.9883449883449883,
+        "card_discovery": 1.0,
+        "fp_ratio": 0.5726415094339623,
+        "alert_rate": 0.006,
+        "n": 555719,
+        "n_fraud": 2145
+      },
+      "test_fraud_rate": 0.0038598644278853163,
+      "mean_prob_test_raw": 0.004742077551782131,
+      "mean_prob_test_corrected": 0.0039948624981608885,
+      "wall_min": 9.7
+    },
+    {
+      "name": "04_pretrained_H12_seed1",
+      "init": "pretrained",
+      "history": 12,
+      "seed": 1,
+      "neg_keep_rate": 0.05,
+      "alert_rate": 0.006,
+      "n_train_examples": 67591,
+      "n_train_fraud": 7017,
+      "best_step": 2500,
+      "val_at_best": {
+        "loss": 0.0026067651342600584,
+        "pr_auc": 0.9829468506670255,
+        "roc_auc": 0.9993386644851352,
+        "recall_at_alert": 0.9591002044989775,
+        "card_discovery": 0.9811320754716981,
+        "fp_ratio": 0.07462686567164178,
+        "alert_rate": 0.006,
+        "n": 83971,
+        "n_fraud": 489,
+        "runtime": 39.9932,
+        "samples_per_second": 2099.632,
+        "steps_per_second": 8.226
+      },
+      "test": {
+        "pr_auc": 0.9854810397373379,
+        "roc_auc": 0.9996621753266755,
+        "recall_at_alert": 0.9892773892773893,
+        "card_discovery": 1.0,
+        "fp_ratio": 0.5711592836946278,
+        "alert_rate": 0.006,
+        "n": 555719,
+        "n_fraud": 2145
+      },
+      "test_fraud_rate": 0.0038598644278853163,
+      "mean_prob_test_raw": 0.004706093110144138,
+      "mean_prob_test_corrected": 0.0038593602192780302,
+      "wall_min": 13.8
+    },
+    {
+      "name": "04_pretrained_H12_seed2",
+      "init": "pretrained",
+      "history": 12,
+      "seed": 2,
+      "neg_keep_rate": 0.05,
+      "alert_rate": 0.006,
+      "n_train_examples": 67173,
+      "n_train_fraud": 7017,
+      "best_step": 3150,
+      "val_at_best": {
+        "loss": 0.0032739017624408007,
+        "pr_auc": 0.9808601075300559,
+        "roc_auc": 0.9981196490246678,
+        "recall_at_alert": 0.9591002044989775,
+        "card_discovery": 0.9811320754716981,
+        "fp_ratio": 0.07462686567164178,
+        "alert_rate": 0.006,
+        "n": 83971,
+        "n_fraud": 489,
+        "runtime": 39.974,
+        "samples_per_second": 2100.643,
+        "steps_per_second": 8.23
+      },
+      "test": {
+        "pr_auc": 0.9855941660687609,
+        "roc_auc": 0.9990811503393381,
+        "recall_at_alert": 0.9888111888111888,
+        "card_discovery": 1.0,
+        "fp_ratio": 0.5719000471475719,
+        "alert_rate": 0.006,
+        "n": 555719,
+        "n_fraud": 2145
+      },
+      "test_fraud_rate": 0.0038598644278853163,
+      "mean_prob_test_raw": 0.004744344856590033,
+      "mean_prob_test_corrected": 0.004000793398412614,
+      "wall_min": 13.8
+    },
+    {
+      "name": "04_scratch_H12_seed0",
+      "init": "scratch",
+      "history": 12,
+      "seed": 0,
+      "neg_keep_rate": 0.05,
+      "alert_rate": 0.006,
+      "n_train_examples": 67288,
+      "n_train_fraud": 7017,
+      "best_step": 3000,
+      "val_at_best": {
+        "loss": 0.007879880256950855,
+        "pr_auc": 0.9525193285536013,
+        "roc_auc": 0.9985790748078434,
+        "recall_at_alert": 0.9100204498977505,
+        "card_discovery": 0.9811320754716981,
+        "fp_ratio": 0.13258426966292136,
+        "alert_rate": 0.006,
+        "n": 83971,
+        "n_fraud": 489,
+        "runtime": 39.9613,
+        "samples_per_second": 2101.306,
+        "steps_per_second": 8.233
+      },
+      "test": {
+        "pr_auc": 0.9417863572997012,
+        "roc_auc": 0.9973940944869855,
+        "recall_at_alert": 0.9454545454545454,
+        "card_discovery": 0.9770642201834863,
+        "fp_ratio": 0.6439842209072978,
+        "alert_rate": 0.006,
+        "n": 555719,
+        "n_fraud": 2145
+      },
+      "test_fraud_rate": 0.0038598644278853163,
+      "mean_prob_test_raw": 0.007116878405213356,
+      "mean_prob_test_corrected": 0.004039693433880347,
+      "wall_min": 13.7
+    },
+    {
+      "name": "04_scratch_H12_seed1",
+      "init": "scratch",
+      "history": 12,
+      "seed": 1,
+      "neg_keep_rate": 0.05,
+      "alert_rate": 0.006,
+      "n_train_examples": 67591,
+      "n_train_fraud": 7017,
+      "best_step": 3000,
+      "val_at_best": {
+        "loss": 0.009314276278018951,
+        "pr_auc": 0.9489135339313118,
+        "roc_auc": 0.9988871264706709,
+        "recall_at_alert": 0.9079754601226994,
+        "card_discovery": 0.9811320754716981,
+        "fp_ratio": 0.13513513513513514,
+        "alert_rate": 0.006,
+        "n": 83971,
+        "n_fraud": 489,
+        "runtime": 39.897,
+        "samples_per_second": 2104.694,
+        "steps_per_second": 8.246
+      },
+      "test": {
+        "pr_auc": 0.9405457143395528,
+        "roc_auc": 0.9970003248144924,
+        "recall_at_alert": 0.9496503496503497,
+        "card_discovery": 0.981651376146789,
+        "fp_ratio": 0.6367206676485027,
+        "alert_rate": 0.006,
+        "n": 555719,
+        "n_fraud": 2145
+      },
+      "test_fraud_rate": 0.0038598644278853163,
+      "mean_prob_test_raw": 0.007392518687993288,
+      "mean_prob_test_corrected": 0.004431367321785869,
+      "wall_min": 13.7
+    },
+    {
+      "name": "04_scratch_H12_seed2",
+      "init": "scratch",
+      "history": 12,
+      "seed": 2,
+      "neg_keep_rate": 0.05,
+      "alert_rate": 0.006,
+      "n_train_examples": 67173,
+      "n_train_fraud": 7017,
+      "best_step": 3150,
+      "val_at_best": {
+        "loss": 0.008930493146181107,
+        "pr_auc": 0.9517598991654769,
+        "roc_auc": 0.9990240111028428,
+        "recall_at_alert": 0.9079754601226994,
+        "card_discovery": 0.9811320754716981,
+        "fp_ratio": 0.13513513513513514,
+        "alert_rate": 0.006,
+        "n": 83971,
+        "n_fraud": 489,
+        "runtime": 39.9119,
+        "samples_per_second": 2103.911,
+        "steps_per_second": 8.243
+      },
+      "test": {
+        "pr_auc": 0.9423056973461373,
+        "roc_auc": 0.9981109795846399,
+        "recall_at_alert": 0.9538461538461539,
+        "card_discovery": 0.981651376146789,
+        "fp_ratio": 0.6295210166177908,
+        "alert_rate": 0.006,
+        "n": 555719,
+        "n_fraud": 2145
+      },
+      "test_fraud_rate": 0.0038598644278853163,
+      "mean_prob_test_raw": 0.007222910411655903,
+      "mean_prob_test_corrected": 0.0043527371249686845,
+      "wall_min": 13.7
+    }
+  ],
+  "aggregate_test": {
+    "pretrained": {
+      "pr_auc": {
+        "mean": 0.985679634120078,
+        "sd": 0.0002524242293186378,
+        "n_seeds": 3
+      },
+      "roc_auc": {
+        "mean": 0.9994553816510773,
+        "sd": 0.0003246906689065237,
+        "n_seeds": 3
+      },
+      "recall_at_alert": {
+        "mean": 0.9888111888111887,
+        "sd": 0.0004662004662004948,
+        "n_seeds": 3
+      },
+      "card_discovery": {
+        "mean": 1.0,
+        "sd": 0.0,
+        "n_seeds": 3
+      },
+      "fp_ratio": {
+        "mean": 0.571900280092054,
+        "sd": 0.0007411128971241872,
+        "n_seeds": 3
+      },
+      "alert_rate": {
+        "mean": 0.006000000000000001,
+        "sd": 1.0622968402425924e-18,
+        "n_seeds": 3
+      },
+      "n": {
+        "mean": 555719.0,
+        "sd": 0.0,
+        "n_seeds": 3
+      },
+      "n_fraud": {
+        "mean": 2145.0,
+        "sd": 0.0,
+        "n_seeds": 3
+      }
+    },
+    "scratch": {
+      "pr_auc": {
+        "mean": 0.9415459229951305,
+        "sd": 0.0009042906263903161,
+        "n_seeds": 3
+      },
+      "roc_auc": {
+        "mean": 0.9975017996287058,
+        "sd": 0.0005631063867313283,
+        "n_seeds": 3
+      },
+      "recall_at_alert": {
+        "mean": 0.9496503496503497,
+        "sd": 0.004195804195804231,
+        "n_seeds": 3
+      },
+      "card_discovery": {
+        "mean": 0.9801223241590215,
+        "sd": 0.0026483957302276253,
+        "n_seeds": 3
+      },
+      "fp_ratio": {
+        "mean": 0.6367419683911971,
+        "sd": 0.007231625672781521,
+        "n_seeds": 3
+      },
+      "alert_rate": {
+        "mean": 0.006000000000000001,
+        "sd": 1.0622968402425924e-18,
+        "n_seeds": 3
+      },
+      "n": {
+        "mean": 555719.0,
+        "sd": 0.0,
+        "n_seeds": 3
+      },
+      "n_fraud": {
+        "mean": 2145.0,
+        "sd": 0.0,
+        "n_seeds": 3
+      }
+    }
+  },
+  "pretraining_gain": {
+    "pr_auc": 0.04413371112494746,
+    "roc_auc": 0.001953582022371503,
+    "recall_at_alert": 0.03916083916083901,
+    "card_discovery": 0.019877675840978548,
+    "fp_ratio": -0.06484168829914316
+  }
+}

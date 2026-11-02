@@ -1,0 +1,39 @@
+{
+  "name": "04_pretrained_H12_seed0",
+  "init": "pretrained",
+  "history": 12,
+  "seed": 0,
+  "neg_keep_rate": 0.05,
+  "alert_rate": 0.006,
+  "n_train_examples": 67288,
+  "n_train_fraud": 7017,
+  "best_step": 2500,
+  "val_at_best": {
+    "loss": 0.00377989886328578,
+    "pr_auc": 0.9787510078991112,
+    "roc_auc": 0.9982658911961184,
+    "recall_at_alert": 0.9570552147239264,
+    "card_discovery": 0.9811320754716981,
+    "fp_ratio": 0.07692307692307693,
+    "alert_rate": 0.006,
+    "n": 83971,
+    "n_fraud": 489,
+    "runtime": 38.8937,
+    "samples_per_second": 2158.989,
+    "steps_per_second": 8.459
+  },
+  "test": {
+    "pr_auc": 0.985963696554135,
+    "roc_auc": 0.9996228192872183,
+    "recall_at_alert": 0.9883449883449883,
+    "card_discovery": 1.0,
+    "fp_ratio": 0.5726415094339623,
+    "alert_rate": 0.006,
+    "n": 555719,
+    "n_fraud": 2145
+  },
+  "test_fraud_rate": 0.0038598644278853163,
+  "mean_prob_test_raw": 0.004742077551782131,
+  "mean_prob_test_corrected": 0.0039948624981608885,
+  "wall_min": 9.7
+}

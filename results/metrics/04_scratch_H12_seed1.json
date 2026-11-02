@@ -1,0 +1,39 @@
+{
+  "name": "04_scratch_H12_seed1",
+  "init": "scratch",
+  "history": 12,
+  "seed": 1,
+  "neg_keep_rate": 0.05,
+  "alert_rate": 0.006,
+  "n_train_examples": 67591,
+  "n_train_fraud": 7017,
+  "best_step": 3000,
+  "val_at_best": {
+    "loss": 0.009314276278018951,
+    "pr_auc": 0.9489135339313118,
+    "roc_auc": 0.9988871264706709,
+    "recall_at_alert": 0.9079754601226994,
+    "card_discovery": 0.9811320754716981,
+    "fp_ratio": 0.13513513513513514,
+    "alert_rate": 0.006,
+    "n": 83971,
+    "n_fraud": 489,
+    "runtime": 39.897,
+    "samples_per_second": 2104.694,
+    "steps_per_second": 8.246
+  },
+  "test": {
+    "pr_auc": 0.9405457143395528,
+    "roc_auc": 0.9970003248144924,
+    "recall_at_alert": 0.9496503496503497,
+    "card_discovery": 0.981651376146789,
+    "fp_ratio": 0.6367206676485027,
+    "alert_rate": 0.006,
+    "n": 555719,
+    "n_fraud": 2145
+  },
+  "test_fraud_rate": 0.0038598644278853163,
+  "mean_prob_test_raw": 0.007392518687993288,
+  "mean_prob_test_corrected": 0.004431367321785869,
+  "wall_min": 13.7
+}
