@@ -4,6 +4,7 @@
     root()       Colab: MyDrive/Colab Notebooks/tfm   laptop: $TFM_ROOT (same sub-folders: data/, results/, pretrain/, ...)
     gpu()        nvidia-smi answers, so CUDA is there (torch-free, so step 5 needs no torch)
     xgb_device() "cuda" | "cpu"  for XGBoost
+    accelerator() "cuda" | "mps" | "cpu"  what the Trainer will train on (it picks MPS by itself when present)
     fp16()       mixed precision only on CUDA; the Trainer refuses it on CPU and Apple MPS
     describe()   the small record every run json stores, so results from different machines can be told apart
 
@@ -52,8 +53,21 @@ def gpu() -> bool:
     return gpu_name() is not None
 
 
+def mps_available() -> bool:
+    """Apple's GPU backend. Asked through torch, which is only installed where training happens."""
+    try:
+        import torch
+        return bool(torch.backends.mps.is_available())
+    except ImportError:
+        return False
+
+
+def accelerator() -> str:
+    return "cuda" if gpu() else ("mps" if mps_available() else "cpu")
+
+
 def xgb_device() -> str:
-    return "cuda" if gpu() else "cpu"
+    return "cuda" if gpu() else "cpu"            # XGBoost has no MPS backend
 
 
 def fp16() -> bool:
@@ -62,5 +76,5 @@ def fp16() -> bool:
 
 def describe() -> dict:
     name = gpu_name()
-    return {"where": "colab" if on_colab() else "laptop", "gpu": name, "device": "cuda" if name else "cpu", "fp16": name is not None,
-            "machine": name or f"{platform.system()} {platform.machine()} {os.cpu_count()} cores"}
+    return {"where": "colab" if on_colab() else "laptop", "gpu": name, "device": "cuda" if name else "cpu", "accelerator": accelerator(),
+            "fp16": name is not None, "machine": name or f"{platform.system()} {platform.machine()} {os.cpu_count()} cores"}

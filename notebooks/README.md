@@ -15,6 +15,7 @@ Colab pulls and pushes with a **single-repo** fine-grained GitHub token (Content
 | `04_finetune.ipynb` | 4 | build history-plus-current examples (train: all fraud + 5% normals; val/test unsampled), one decoded example next to the raw rows plus a 2,000-example machine check per split, pretrained vs scratch classifier, six resumable runs (2 inits x 3 seeds, finished runs skipped), per-run and mean/sd test metrics, pretraining gain, calibration note, PR curves, `04_finetune.json` |
 | `05_baseline.ipynb` | 5 | build the 29 features and time it, feature table with NaN shares, one card's rows next to their history features plus a 2,000-row brute-force check, 12-point grid on validation (saved, so reruns skip it), six fits (29 features and current-only x 3 seeds, finished fits skipped), per-fit and mean/sd tables, history gain, side-by-side with the step-4 transformers, top-10 feature importance, PR curves with the transformer, `05_baseline.json` |
 | `06a_validate.ipynb` | 6a | no training: loads the saved test scores of all four models, paired bootstrap (cards resampled) on transformer minus XGBoost, month-by-month alert rate / recall / FP ratio at one fixed cutoff, PSI per token field train vs test, recall per category / history bucket / cardholder group (cards.parquet joined for the first time), 20 + 20 frauds caught by one model only with decoded histories and a medians table, the ceiling numbers; writes `06a_validate.json` and `06a_monthly.png`; CPU, minutes |
+| `06b_ablations.ipynb` | 6b | gates G1 (every checkpoint folder complete), G2 (re-score a step-4 checkpoint here and match its saved scores), then 15 resumable fine-tuning runs from `pretrain/best`: history 0 / 5 / 12 / 32 with last-token pooling and mean pooling at 12, three seeds each, finished runs skipped by json; the first run is H12 seed 0 and is gate G3 against the step-4 T4 spread; per-run table, history curve with the XGBoost lines, pooling table; writes `06b_ablations.json` and `06b_history.png`; T4 or Apple MPS, one machine per ablation |
 
 Notebooks live in `MyDrive/Colab Notebooks/tfm/notebooks/` and are opened from Drive (right click -> Open with -> Google Colaboratory). Edits save to that Drive file. The push cell copies every notebook there back into this folder with outputs kept, so GitHub shows the frames and charts each stage produced. A new notebook written on the laptop reaches Drive automatically the next time any notebook's cell 2 runs.
 
@@ -58,7 +59,7 @@ Steps 1, 2 and 5 need no GPU. Download from Drive's `tfm/` what the step reads, 
 
 ```
 pip install -r requirements.txt            # torch and transformers are only needed for steps 3, 4, 6b
-TFM_ROOT=$PWD jupyter notebook notebooks/05_baseline.ipynb     # or notebooks/06a_validate.ipynb
+TFM_ROOT=$PWD jupyter notebook notebooks/05_baseline.ipynb     # or 06a_validate.ipynb; 06b_ablations.ipynb trains and wants MPS or CUDA
 ```
 
 Run top to bottom. The notebook file being run is the repo copy, so its outputs land in the repo directly; the push cell copies the result files into `results/` and stops, and the commit is made from the terminal. Before the next Colab session, delete the Drive copy of any notebook whose code changed on the laptop, so cell 2 brings the new one in.

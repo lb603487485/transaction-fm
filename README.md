@@ -4,7 +4,7 @@ Mini Transaction Foundation Model: a GPT-2 style decoder pretrained with next-to
 
 Scaled-down reproduction of the recipe in the Wells Fargo talk "What It Takes to Build Production-Grade Foundation Models in Finance" (1B parameters, 8 x H200) at about 11M parameters on one free Colab T4. The point is not the absolute score; it is testing which of the talk's claims survive at small scale.
 
-Status: steps 1 to 4 run on Colab, step 5 run on the laptop (2026-11-02, CPU), step 6a written (validator checks, no training), 6b and 7 to follow.
+Status: steps 1 to 4 run on Colab, step 5 run on the laptop (2026-11-02, CPU), 6a (validator checks) and 6b (history and pooling ablations) written, 6c and 7 to follow.
 
 ## Layout
 
@@ -18,7 +18,8 @@ src/tfm/
   metrics.py         PR-AUC, ROC-AUC, recall and card discovery at a fixed alert rate, FP ratio, sampling correction, mean/sd over seeds
   baseline.py        step 5: 29 leak-free features (rolling windows closed on the left, cumsum minus current), XGBoost with early stopping on val, grid
   validate.py        step 6a: validator checks on saved scores: paired bootstrap by card, monthly metrics at one fixed cutoff, PSI per token field, subgroups, 20 + 20 disagreements
-  ablate.py          step 6b: ablations (history length, pooling, tokenizer, objective)   (todo)
+  ablate.py          step 6b: history-length and pooling ablations from pretrain/best (15 resumable fine-tuning runs), mean-pooling head, the three gates for training on a second machine
+  (6c, todo)         ablations that need a new pretraining run: tokenizer switches, CLM vs MLM, perplexity vs PR-AUC
 configs/             one yaml per run (seed, history length, bin counts)
 results/metrics/     small json files pushed back from Colab
 results/figures/     png charts used in README and report
@@ -62,7 +63,9 @@ See `notebooks/README.md` for the cells.
 
 ## Colab or laptop, GPU or CPU
 
-`src/tfm/runtime.py` decides at run time: `root()` is the Drive folder on Colab and `$TFM_ROOT` on a laptop, normally the repo itself (`TFM_ROOT=$PWD`): the Drive sub-folders `data/`, `pretrain/`, `finetune/`, `baseline/` sit at the repo root and are gitignored, and run output lands in `results/` next to the tracked `metrics/` and `figures/`; `gpu()` asks `nvidia-smi`, so XGBoost runs on `cuda` or `cpu` and the Trainer uses `fp16` only on CUDA (CPU and Apple MPS run fp32). Every run json carries `runtime` (`describe()`: where, gpu, device, fp16, machine). Saved checkpoints are fp32 safetensors, so a model trained on the T4 loads unchanged on a laptop; fp16 is a property of the run that produced a result, not of the weights. Steps 1, 2 and 5 are CPU work and run on a laptop in minutes; steps 3, 4 and 6 want the T4, and arms of one ablation should run on one kind of machine.
+`src/tfm/runtime.py` decides at run time: `root()` is the Drive folder on Colab and `$TFM_ROOT` on a laptop, normally the repo itself (`TFM_ROOT=$PWD`): the Drive sub-folders `data/`, `pretrain/`, `finetune/`, `baseline/` sit at the repo root and are gitignored, and run output lands in `results/` next to the tracked `metrics/` and `figures/`; `gpu()` asks `nvidia-smi`, so XGBoost runs on `cuda` or `cpu` and the Trainer uses `fp16` only on CUDA (CPU and Apple MPS run fp32). Every run json carries `runtime` (`describe()`: where, gpu, device, fp16, machine). Saved checkpoints are fp32 safetensors, so a model trained on the T4 loads unchanged on a laptop; fp16 is a property of the run that produced a result, not of the weights. Steps 1, 2, 5 and 6a are CPU work and run on a laptop in minutes; steps 3, 4, 6b and 6c train, want the T4, and can run on an Apple-silicon laptop through MPS (`accelerator()` reports `cuda`, `mps` or `cpu`; the Trainer picks MPS by itself). Arms of one ablation run on one kind of machine, and notebook 06b opens with three gates (checkpoint integrity, re-scoring a T4 checkpoint locally, retraining the H12 arm and checking it lands in the T4 seed spread) before it trains anything.
+
+Anaconda note: pip's torch wheel ships its own `libomp.dylib`, while Anaconda's scikit-learn and xgboost use `/opt/anaconda3/lib/libomp.dylib`; two OpenMP runtimes in one process segfault on the first parallel kernel (seen in `layer_norm` and in `xgboost.train`). Fix used here: replace `site-packages/torch/lib/libomp.dylib` with a symlink to Anaconda's copy (the original is kept as `libomp.dylib.pip-original`). A conda-installed torch avoids the problem from the start.
 
 ## Feature engineering cost (step 5)
 

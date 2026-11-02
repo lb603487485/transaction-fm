@@ -48,3 +48,15 @@ def test_training_args_fp16_follows_gpu_availability(monkeypatch):
     assert training_args("/tmp/x").fp16 is False
     monkeypatch.setattr(runtime, "gpu_name", lambda: "Tesla T4")
     assert training_args("/tmp/x").fp16 is True
+
+
+def test_accelerator_prefers_cuda_then_mps_then_cpu(monkeypatch):
+    monkeypatch.setattr(runtime, "gpu_name", lambda: "Tesla T4")
+    monkeypatch.setattr(runtime, "mps_available", lambda: True)
+    assert runtime.accelerator() == "cuda"
+    monkeypatch.setattr(runtime, "gpu_name", lambda: None)
+    assert runtime.accelerator() == "mps" and runtime.fp16() is False and runtime.xgb_device() == "cpu"
+    monkeypatch.setattr(runtime, "mps_available", lambda: False)
+    assert runtime.accelerator() == "cpu"
+    monkeypatch.setattr(runtime, "on_colab", lambda: False)
+    assert runtime.describe()["accelerator"] == "cpu"
