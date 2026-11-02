@@ -1,0 +1,42 @@
+{
+  "name": "05_xgb_current_seed0",
+  "variant": "current",
+  "n_features": 6,
+  "seed": 0,
+  "max_depth": 6,
+  "learning_rate": 0.05,
+  "scale_pos_weight": 20.0,
+  "best_iteration": 279,
+  "n_trees_tried": 330,
+  "val_pr_auc": 0.835809927274356,
+  "fit_seconds": 5.9,
+  "n_train_rows": 1212704,
+  "n_train_fraud": 7017,
+  "test": {
+    "pr_auc": 0.7825291375682578,
+    "roc_auc": 0.9962959888126172,
+    "recall_at_alert": 0.8074592074592074,
+    "card_discovery": 0.9862385321100917,
+    "fp_ratio": 0.9249422632794457,
+    "alert_rate": 0.006,
+    "n": 555719,
+    "n_fraud": 2145
+  },
+  "feature_seconds": 5.2,
+  "device": "cpu",
+  "runtime": {
+    "where": "laptop",
+    "gpu": null,
+    "device": "cpu",
+    "fp16": false,
+    "machine": "Darwin arm64 12 cores"
+  },
+  "importance_gain": {
+    "amt": 909.82,
+    "cat_code": 396.33,
+    "hour": 382.14,
+    "log_amt": 377.29,
+    "dist_km": 27.64,
+    "dow": 24.89
+  }
+}

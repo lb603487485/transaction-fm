@@ -4,7 +4,7 @@ Mini Transaction Foundation Model: a GPT-2 style decoder pretrained with next-to
 
 Scaled-down reproduction of the recipe in the Wells Fargo talk "What It Takes to Build Production-Grade Foundation Models in Finance" (1B parameters, 8 x H200) at about 11M parameters on one free Colab T4. The point is not the absolute score; it is testing which of the talk's claims survive at small scale.
 
-Status: steps 1 to 4 run on Colab, step 5 written (2026-11-02), steps 6 and 7 to follow.
+Status: steps 1 to 4 run on Colab, step 5 run on the laptop (2026-11-02, CPU), steps 6 and 7 to follow.
 
 ## Layout
 
