@@ -4,7 +4,7 @@ Mini Transaction Foundation Model: a GPT-2 style decoder pretrained with next-to
 
 Scaled-down reproduction of the recipe in the Wells Fargo talk "What It Takes to Build Production-Grade Foundation Models in Finance" (1B parameters, 8 x H200) at about 11M parameters on one free Colab T4. The point is not the absolute score; it is testing which of the talk's claims survive at small scale.
 
-Status: steps 1 to 4 run on Colab, step 5 run on the laptop (2026-11-02, CPU), steps 6 and 7 to follow.
+Status: steps 1 to 4 run on Colab, step 5 run on the laptop (2026-11-02, CPU), step 6a written (validator checks, no training), 6b and 7 to follow.
 
 ## Layout
 
@@ -17,7 +17,8 @@ src/tfm/
   finetune.py        step 4: history + current examples (train sampled, val/test not), GPT2ForSequenceClassification, last-token pooling
   metrics.py         PR-AUC, ROC-AUC, recall and card discovery at a fixed alert rate, FP ratio, sampling correction, mean/sd over seeds
   baseline.py        step 5: 29 leak-free features (rolling windows closed on the left, cumsum minus current), XGBoost with early stopping on val, grid
-  evaluate.py        step 6: ablations and validator checks                              (todo)
+  validate.py        step 6a: validator checks on saved scores: paired bootstrap by card, monthly metrics at one fixed cutoff, PSI per token field, subgroups, 20 + 20 disagreements
+  ablate.py          step 6b: ablations (history length, pooling, tokenizer, objective)   (todo)
 configs/             one yaml per run (seed, history length, bin counts)
 results/metrics/     small json files pushed back from Colab
 results/figures/     png charts used in README and report
