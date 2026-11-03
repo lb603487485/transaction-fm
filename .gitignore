@@ -6,6 +6,7 @@ data/
 pretrain/
 finetune/
 baseline/
+ablate/
 /results/*.json
 /results/*.png
 *.npy

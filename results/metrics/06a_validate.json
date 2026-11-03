@@ -1,0 +1,736 @@
+{
+  "alert_rate": 0.006,
+  "n_test": 555719,
+  "n_test_fraud": 2145,
+  "pair": "transformer pretrained_H12 seed0 vs xgboost full seed0",
+  "bootstrap": {
+    "pr_auc": {
+      "diff": 0.01062003153482638,
+      "ci_low": 0.005893012802583634,
+      "ci_high": 0.015603858744433331,
+      "n_boot": 1000,
+      "unit": "card"
+    },
+    "recall_at_alert": {
+      "diff": 0.01025641025641022,
+      "ci_low": 0.0039114031513175496,
+      "ci_high": 0.016291717943326164,
+      "n_boot": 1000,
+      "unit": "card"
+    },
+    "fp_ratio": {
+      "diff": -0.01649099771570406,
+      "ci_low": -0.02654869004817459,
+      "ci_high": -0.006547729224840331,
+      "n_boot": 1000,
+      "unit": "card"
+    }
+  },
+  "seed_pairs": [
+    {
+      "seed": 0,
+      "pr_auc diff": 0.01062003153482638,
+      "recall_at_alert diff": 0.01025641025641022,
+      "fp_ratio diff": -0.01649099771570406
+    },
+    {
+      "seed": 1,
+      "pr_auc diff": 0.010079608270586626,
+      "recall_at_alert diff": 0.012587412587412583,
+      "fp_ratio diff": -0.02024883086384477
+    },
+    {
+      "seed": 2,
+      "pr_auc diff": 0.010930186654509177,
+      "recall_at_alert diff": 0.009790209790209725,
+      "fp_ratio diff": -0.015719000471475675
+    }
+  ],
+  "monthly": {
+    "transformer": [
+      {
+        "month": "2020-06",
+        "n": 30058,
+        "n_fraud": 133,
+        "fraud_rate": 0.004424778761061947,
+        "pr_auc": 0.9942195927224117,
+        "alerts": 195,
+        "alert_rate": 0.006487457582008117,
+        "recall_at_cutoff": 0.9924812030075187,
+        "fp_ratio": 0.4772727272727273
+      },
+      {
+        "month": "2020-07",
+        "n": 85848,
+        "n_fraud": 321,
+        "fraud_rate": 0.003739166899636567,
+        "pr_auc": 0.9774356409909285,
+        "alerts": 509,
+        "alert_rate": 0.005929083962352064,
+        "recall_at_cutoff": 0.9750778816199377,
+        "fp_ratio": 0.6261980830670927
+      },
+      {
+        "month": "2020-08",
+        "n": 88759,
+        "n_fraud": 415,
+        "fraud_rate": 0.004675582194481686,
+        "pr_auc": 0.9926640601493082,
+        "alerts": 591,
+        "alert_rate": 0.00665847970346669,
+        "recall_at_cutoff": 0.9951807228915662,
+        "fp_ratio": 0.43099273607748184
+      },
+      {
+        "month": "2020-09",
+        "n": 69533,
+        "n_fraud": 340,
+        "fraud_rate": 0.004889764572217508,
+        "pr_auc": 0.9900180721792978,
+        "alerts": 533,
+        "alert_rate": 0.0076654250499762705,
+        "recall_at_cutoff": 0.9911764705882353,
+        "fp_ratio": 0.5816023738872403
+      },
+      {
+        "month": "2020-10",
+        "n": 69348,
+        "n_fraud": 384,
+        "fraud_rate": 0.005537290188613947,
+        "pr_auc": 0.9814102749990831,
+        "alerts": 576,
+        "alert_rate": 0.00830593528292092,
+        "recall_at_cutoff": 0.984375,
+        "fp_ratio": 0.5238095238095238
+      },
+      {
+        "month": "2020-11",
+        "n": 72635,
+        "n_fraud": 294,
+        "fraud_rate": 0.004047635437461279,
+        "pr_auc": 0.9866111899915191,
+        "alerts": 482,
+        "alert_rate": 0.0066359193226406005,
+        "recall_at_cutoff": 0.9897959183673469,
+        "fp_ratio": 0.6563573883161512
+      },
+      {
+        "month": "2020-12",
+        "n": 139538,
+        "n_fraud": 258,
+        "fraud_rate": 0.001848958706588886,
+        "pr_auc": 0.9827359614402318,
+        "alerts": 448,
+        "alert_rate": 0.0032105949633791514,
+        "recall_at_cutoff": 0.9922480620155039,
+        "fp_ratio": 0.75
+      }
+    ],
+    "xgboost": [
+      {
+        "month": "2020-06",
+        "n": 30058,
+        "n_fraud": 133,
+        "fraud_rate": 0.004424778761061947,
+        "pr_auc": 0.9813350134240485,
+        "alerts": 214,
+        "alert_rate": 0.007119568833588396,
+        "recall_at_cutoff": 0.9849624060150376,
+        "fp_ratio": 0.6335877862595419
+      },
+      {
+        "month": "2020-07",
+        "n": 85848,
+        "n_fraud": 321,
+        "fraud_rate": 0.003739166899636567,
+        "pr_auc": 0.9612914955227949,
+        "alerts": 522,
+        "alert_rate": 0.006080514397539838,
+        "recall_at_cutoff": 0.9595015576323987,
+        "fp_ratio": 0.6948051948051948
+      },
+      {
+        "month": "2020-08",
+        "n": 88759,
+        "n_fraud": 415,
+        "fraud_rate": 0.004675582194481686,
+        "pr_auc": 0.9807394166965541,
+        "alerts": 596,
+        "alert_rate": 0.006714812019062856,
+        "recall_at_cutoff": 0.9855421686746988,
+        "fp_ratio": 0.4572127139364303
+      },
+      {
+        "month": "2020-09",
+        "n": 69533,
+        "n_fraud": 340,
+        "fraud_rate": 0.004889764572217508,
+        "pr_auc": 0.9818568200195602,
+        "alerts": 488,
+        "alert_rate": 0.007018250327182777,
+        "recall_at_cutoff": 0.9794117647058823,
+        "fp_ratio": 0.46546546546546547
+      },
+      {
+        "month": "2020-10",
+        "n": 69348,
+        "n_fraud": 384,
+        "fraud_rate": 0.005537290188613947,
+        "pr_auc": 0.9791206703028137,
+        "alerts": 543,
+        "alert_rate": 0.00783007440733691,
+        "recall_at_cutoff": 0.9817708333333334,
+        "fp_ratio": 0.4403183023872679
+      },
+      {
+        "month": "2020-11",
+        "n": 72635,
+        "n_fraud": 294,
+        "fraud_rate": 0.004047635437461279,
+        "pr_auc": 0.980135043099513,
+        "alerts": 441,
+        "alert_rate": 0.006071453156191919,
+        "recall_at_cutoff": 0.9829931972789115,
+        "fp_ratio": 0.5259515570934256
+      },
+      {
+        "month": "2020-12",
+        "n": 139538,
+        "n_fraud": 258,
+        "fraud_rate": 0.001848958706588886,
+        "pr_auc": 0.9629215047284256,
+        "alerts": 530,
+        "alert_rate": 0.0037982485057833706,
+        "recall_at_cutoff": 0.9728682170542635,
+        "fp_ratio": 1.1115537848605577
+      }
+    ]
+  },
+  "psi": [
+    {
+      "field": "TX",
+      "n_tokens": 1,
+      "psi train vs test": 0.0,
+      "psi train vs val": 0.0,
+      "reading": "stable"
+    },
+    {
+      "field": "DT",
+      "n_tokens": 12,
+      "psi train vs test": 0.020963139477586653,
+      "psi train vs val": 0.01313486095075962,
+      "reading": "stable"
+    },
+    {
+      "field": "HOUR",
+      "n_tokens": 6,
+      "psi train vs test": 1.0796925748288521e-05,
+      "psi train vs val": 2.6290864363553775e-05,
+      "reading": "stable"
+    },
+    {
+      "field": "CAT",
+      "n_tokens": 14,
+      "psi train vs test": 4.1875442195708627e-05,
+      "psi train vs val": 0.00011648383309245631,
+      "reading": "stable"
+    },
+    {
+      "field": "MER",
+      "n_tokens": 501,
+      "psi train vs test": 0.0014345689573080497,
+      "psi train vs val": 0.006472995823068826,
+      "reading": "stable"
+    },
+    {
+      "field": "AMT",
+      "n_tokens": 20,
+      "psi train vs test": 0.00020807758322407993,
+      "psi train vs val": 0.0003028694444677231,
+      "reading": "stable"
+    },
+    {
+      "field": "DIST",
+      "n_tokens": 8,
+      "psi train vs test": 1.9018462870784436e-05,
+      "psi train vs val": 0.00012356169568079322,
+      "reading": "stable"
+    }
+  ],
+  "subgroups": {
+    "category": [
+      {
+        "group": "entertainment",
+        "n": 40104,
+        "n_fraud": 59,
+        "recall tra": 1.0,
+        "alert rate tra": 0.0024187113504887292,
+        "pr_auc tra": 0.9867976701620318,
+        "recall xgb": 0.9830508474576272,
+        "alert rate xgb": 0.0024436465190504687,
+        "pr_auc xgb": 0.9913841807909602,
+        "recall gap (tra - xgb)": 0.016949152542372836
+      },
+      {
+        "group": "food_dining",
+        "n": 39268,
+        "n_fraud": 54,
+        "recall tra": 0.9444444444444444,
+        "alert rate tra": 0.002444738718549455,
+        "pr_auc tra": 0.92397492254266,
+        "recall xgb": 0.9259259259259259,
+        "alert rate xgb": 0.0034633798512783945,
+        "pr_auc xgb": 0.7943852897259314,
+        "recall gap (tra - xgb)": 0.01851851851851849
+      },
+      {
+        "group": "gas_transport",
+        "n": 56370,
+        "n_fraud": 154,
+        "recall tra": 1.0,
+        "alert rate tra": 0.0038318254390633318,
+        "pr_auc tra": 0.989036978936378,
+        "recall xgb": 1.0,
+        "alert rate xgb": 0.0032109277984743658,
+        "pr_auc xgb": 0.9972586306320845,
+        "recall gap (tra - xgb)": 0.0
+      },
+      {
+        "group": "grocery_net",
+        "n": 19426,
+        "n_fraud": 41,
+        "recall tra": 1.0,
+        "alert rate tra": 0.00746422320601256,
+        "pr_auc tra": 0.9686155562198456,
+        "recall xgb": 0.975609756097561,
+        "alert rate xgb": 0.006897971790384021,
+        "pr_auc xgb": 0.9294563817772133,
+        "recall gap (tra - xgb)": 0.024390243902439046
+      },
+      {
+        "group": "grocery_pos",
+        "n": 52553,
+        "n_fraud": 485,
+        "recall tra": 1.0,
+        "alert rate tra": 0.011493159286815215,
+        "pr_auc tra": 0.9995550533816162,
+        "recall xgb": 1.0,
+        "alert rate xgb": 0.009742545620611573,
+        "pr_auc xgb": 0.9999159851190789,
+        "recall gap (tra - xgb)": 0.0
+      },
+      {
+        "group": "health_fitness",
+        "n": 36674,
+        "n_fraud": 52,
+        "recall tra": 0.9615384615384616,
+        "alert rate tra": 0.0024540546436167313,
+        "pr_auc tra": 0.9582253281681462,
+        "recall xgb": 0.9423076923076923,
+        "alert rate xgb": 0.0037083492392430604,
+        "pr_auc xgb": 0.8785178319818865,
+        "recall gap (tra - xgb)": 0.019230769230769273
+      },
+      {
+        "group": "home",
+        "n": 52345,
+        "n_fraud": 67,
+        "recall tra": 1.0,
+        "alert rate tra": 0.0025599388671315314,
+        "pr_auc tra": 0.9858366422014213,
+        "recall xgb": 0.9253731343283582,
+        "alert rate xgb": 0.0028082911452860827,
+        "pr_auc xgb": 0.9011420899633731,
+        "recall gap (tra - xgb)": 0.07462686567164178
+      },
+      {
+        "group": "kids_pets",
+        "n": 48692,
+        "n_fraud": 65,
+        "recall tra": 0.9692307692307692,
+        "alert rate tra": 0.0031216626961307814,
+        "pr_auc tra": 0.945872111173199,
+        "recall xgb": 0.9076923076923077,
+        "alert rate xgb": 0.0034707960239875133,
+        "pr_auc xgb": 0.7903783111696064,
+        "recall gap (tra - xgb)": 0.06153846153846154
+      },
+      {
+        "group": "misc_net",
+        "n": 27367,
+        "n_fraud": 267,
+        "recall tra": 0.9925093632958801,
+        "alert rate tra": 0.013483392406913436,
+        "pr_auc tra": 0.9906027085181865,
+        "recall xgb": 0.9925093632958801,
+        "alert rate xgb": 0.01501808747761903,
+        "pr_auc xgb": 0.9867752515143645,
+        "recall gap (tra - xgb)": 0.0
+      },
+      {
+        "group": "misc_pos",
+        "n": 34574,
+        "n_fraud": 72,
+        "recall tra": 0.9861111111111112,
+        "alert rate tra": 0.005842540637473245,
+        "pr_auc tra": 0.9527243223860627,
+        "recall xgb": 0.9305555555555556,
+        "alert rate xgb": 0.006421010007520102,
+        "pr_auc xgb": 0.8910303209626242,
+        "recall gap (tra - xgb)": 0.05555555555555558
+      },
+      {
+        "group": "personal_care",
+        "n": 39327,
+        "n_fraud": 70,
+        "recall tra": 0.9,
+        "alert rate tra": 0.00455158033920716,
+        "pr_auc tra": 0.895257318091223,
+        "recall xgb": 0.8428571428571429,
+        "alert rate xgb": 0.004602435985455285,
+        "pr_auc xgb": 0.7448471750018351,
+        "recall gap (tra - xgb)": 0.05714285714285716
+      },
+      {
+        "group": "shopping_net",
+        "n": 41779,
+        "n_fraud": 506,
+        "recall tra": 0.9960474308300395,
+        "alert rate tra": 0.015366571722635773,
+        "pr_auc tra": 0.9980014626873605,
+        "recall xgb": 1.0,
+        "alert rate xgb": 0.014887862323176716,
+        "pr_auc xgb": 0.9988643721498413,
+        "recall gap (tra - xgb)": -0.0039525691699604515
+      },
+      {
+        "group": "shopping_pos",
+        "n": 49791,
+        "n_fraud": 213,
+        "recall tra": 0.9953051643192489,
+        "alert rate tra": 0.006607619850977084,
+        "pr_auc tra": 0.993969402675473,
+        "recall xgb": 1.0,
+        "alert rate xgb": 0.005864513667128597,
+        "pr_auc xgb": 0.9954067915663624,
+        "recall gap (tra - xgb)": -0.0046948356807511304
+      },
+      {
+        "group": "travel",
+        "n": 17449,
+        "n_fraud": 40,
+        "recall tra": 0.875,
+        "alert rate tra": 0.004527480084818614,
+        "pr_auc tra": 0.8773387955453122,
+        "recall xgb": 0.775,
+        "alert rate xgb": 0.005329818327697862,
+        "pr_auc xgb": 0.7146283619984465,
+        "recall gap (tra - xgb)": 0.09999999999999998
+      }
+    ],
+    "history rows before": [
+      {
+        "group": "1-4",
+        "n": 64,
+        "n_fraud": 64,
+        "recall tra": 1.0,
+        "alert rate tra": 1.0,
+        "pr_auc tra": NaN,
+        "recall xgb": 1.0,
+        "alert rate xgb": 1.0,
+        "pr_auc xgb": NaN,
+        "recall gap (tra - xgb)": 0.0
+      },
+      {
+        "group": "32+",
+        "n": 555556,
+        "n_fraud": 1982,
+        "recall tra": 0.987891019172553,
+        "alert rate tra": 0.005709595432323654,
+        "pr_auc tra": 0.9847833976139948,
+        "recall xgb": 0.9762865792129163,
+        "alert rate xgb": 0.005707795433763653,
+        "pr_auc xgb": 0.972449078114198,
+        "recall gap (tra - xgb)": 0.01160443995963667
+      },
+      {
+        "group": "5-11",
+        "n": 81,
+        "n_fraud": 81,
+        "recall tra": 1.0,
+        "alert rate tra": 1.0,
+        "pr_auc tra": NaN,
+        "recall xgb": 1.0,
+        "alert rate xgb": 1.0,
+        "pr_auc xgb": NaN,
+        "recall gap (tra - xgb)": 0.0
+      }
+    ],
+    "gender": [
+      {
+        "group": "F",
+        "n": 304886,
+        "n_fraud": 1164,
+        "recall tra": 0.9819587628865979,
+        "alert rate tra": 0.006471271229246341,
+        "pr_auc tra": 0.9787941471278839,
+        "recall xgb": 0.9707903780068728,
+        "alert rate xgb": 0.006159679355562407,
+        "pr_auc xgb": 0.9638414207455551,
+        "recall gap (tra - xgb)": 0.011168384879725046
+      },
+      {
+        "group": "M",
+        "n": 250833,
+        "n_fraud": 981,
+        "recall tra": 0.9959225280326198,
+        "alert rate tra": 0.005425920831788481,
+        "pr_auc tra": 0.9933954840619,
+        "recall xgb": 0.9867482161060143,
+        "alert rate xgb": 0.005804658876623092,
+        "pr_auc xgb": 0.9878245762613711,
+        "recall gap (tra - xgb)": 0.00917431192660556
+      }
+    ],
+    "age_bucket": [
+      {
+        "group": "25-34",
+        "n": 113435,
+        "n_fraud": 417,
+        "recall tra": 0.9904076738609112,
+        "alert rate tra": 0.006770397143738705,
+        "pr_auc tra": 0.9866559228776526,
+        "recall xgb": 0.9832134292565947,
+        "alert rate xgb": 0.006073963062546833,
+        "pr_auc xgb": 0.9732181070447871,
+        "recall gap (tra - xgb)": 0.007194244604316502
+      },
+      {
+        "group": "35-44",
+        "n": 122214,
+        "n_fraud": 386,
+        "recall tra": 0.9922279792746114,
+        "alert rate tra": 0.005874940677827418,
+        "pr_auc tra": 0.9830355493857063,
+        "recall xgb": 0.9818652849740933,
+        "alert rate xgb": 0.005474004614855909,
+        "pr_auc xgb": 0.9653191174060973,
+        "recall gap (tra - xgb)": 0.01036269430051806
+      },
+      {
+        "group": "45-54",
+        "n": 113064,
+        "n_fraud": 427,
+        "recall tra": 0.9836065573770492,
+        "alert rate tra": 0.005713578150428076,
+        "pr_auc tra": 0.9802899837042726,
+        "recall xgb": 0.9648711943793911,
+        "alert rate xgb": 0.005819712729073799,
+        "pr_auc xgb": 0.9639534422800521,
+        "recall gap (tra - xgb)": 0.0187353629976581
+      },
+      {
+        "group": "55-64",
+        "n": 69018,
+        "n_fraud": 342,
+        "recall tra": 0.9883040935672515,
+        "alert rate tra": 0.006186791851401084,
+        "pr_auc tra": 0.9906461880546873,
+        "recall xgb": 0.9766081871345029,
+        "alert rate xgb": 0.007085108232634965,
+        "pr_auc xgb": 0.979893408790486,
+        "recall gap (tra - xgb)": 0.011695906432748537
+      },
+      {
+        "group": "65+",
+        "n": 88157,
+        "n_fraud": 410,
+        "recall tra": 0.9878048780487805,
+        "alert rate tra": 0.005603638962305886,
+        "pr_auc tra": 0.9873281770560972,
+        "recall xgb": 0.975609756097561,
+        "alert rate xgb": 0.00619349569518019,
+        "pr_auc xgb": 0.9829990894019995,
+        "recall gap (tra - xgb)": 0.012195121951219523
+      },
+      {
+        "group": "<25",
+        "n": 49831,
+        "n_fraud": 163,
+        "recall tra": 0.9877300613496932,
+        "alert rate tra": 0.0056390600228773255,
+        "pr_auc tra": 0.9868096060767328,
+        "recall xgb": 1.0,
+        "alert rate xgb": 0.005679195681403143,
+        "pr_auc xgb": 0.9929020583290269,
+        "recall gap (tra - xgb)": -0.012269938650306789
+      }
+    ],
+    "city_pop_bucket": [
+      {
+        "group": "100k-1M",
+        "n": 61870,
+        "n_fraud": 169,
+        "recall tra": 1.0,
+        "alert rate tra": 0.005737837401002101,
+        "pr_auc tra": 0.9906270399221613,
+        "recall xgb": 0.9940828402366864,
+        "alert rate xgb": 0.005495393567156942,
+        "pr_auc xgb": 0.9806416343130844,
+        "recall gap (tra - xgb)": 0.00591715976331364
+      },
+      {
+        "group": "10k-100k",
+        "n": 89844,
+        "n_fraud": 384,
+        "recall tra": 0.9817708333333334,
+        "alert rate tra": 0.007501892168647878,
+        "pr_auc tra": 0.9817917076232869,
+        "recall xgb": 0.9661458333333334,
+        "alert rate xgb": 0.007056676016205868,
+        "pr_auc xgb": 0.9634481657194279,
+        "recall gap (tra - xgb)": 0.015625
+      },
+      {
+        "group": "1M+",
+        "n": 14046,
+        "n_fraud": 39,
+        "recall tra": 1.0,
+        "alert rate tra": 0.005410793108358252,
+        "pr_auc tra": 1.0,
+        "recall xgb": 1.0,
+        "alert rate xgb": 0.0059091556314965115,
+        "pr_auc xgb": 0.9936762479445406,
+        "recall gap (tra - xgb)": 0.0
+      },
+      {
+        "group": "<10k",
+        "n": 389959,
+        "n_fraud": 1553,
+        "recall tra": 0.9884095299420477,
+        "alert rate tra": 0.005715985526683574,
+        "pr_auc tra": 0.9863383551357041,
+        "recall xgb": 0.978750804893754,
+        "alert rate xgb": 0.005839075389976895,
+        "pr_auc xgb": 0.9777378520440873,
+        "recall gap (tra - xgb)": 0.009658725048293682
+      }
+    ]
+  },
+  "disagreements": {
+    "transformer_only": [
+      162595,
+      536283,
+      39997,
+      455575,
+      347022,
+      533054,
+      549203,
+      116411,
+      437800,
+      228327,
+      371507,
+      533060,
+      533053,
+      343903,
+      62279,
+      357017,
+      271631,
+      413623,
+      119149,
+      376913
+    ],
+    "xgboost_only": [
+      412834,
+      407533,
+      412833,
+      193434,
+      409931,
+      549197,
+      292915,
+      368005
+    ],
+    "medians": {
+      "transformer only": {
+        "rows": 20,
+        "hist_n": 2261.5,
+        "amt_ratio_mean": 0.267387636429956,
+        "amt_z": -0.3303458678296459,
+        "gap_prev_s": 32881.5,
+        "n_24h": 3.5,
+        "hist_cat_share": 0.07137874657692073,
+        "first_at_merchant": 0.0,
+        "amt": 21.515
+      },
+      "xgboost only": {
+        "rows": 8,
+        "hist_n": 1594.0,
+        "amt_ratio_mean": 10.050237792597526,
+        "amt_z": 7.264985431902088,
+        "gap_prev_s": 62940.0,
+        "n_24h": 0.5,
+        "hist_cat_share": 0.06912804399057344,
+        "first_at_merchant": 0.0,
+        "amt": 840.53
+      },
+      "all test fraud": {
+        "rows": 2145,
+        "hist_n": 1398.0,
+        "amt_ratio_mean": 5.5114766307619325,
+        "amt_z": 2.3616739211338373,
+        "gap_prev_s": 4945.0,
+        "n_24h": 4.0,
+        "hist_cat_share": 0.078196872125115,
+        "first_at_merchant": 0.0,
+        "amt": 371.94
+      },
+      "all test rows": {
+        "rows": 555719,
+        "hist_n": 2139.0,
+        "amt_ratio_mean": 0.6685180848194792,
+        "amt_z": -0.17855392191785094,
+        "gap_prev_s": 13876.0,
+        "n_24h": 4.0,
+        "hist_cat_share": 0.08085808580858085,
+        "first_at_merchant": 0.0,
+        "amt": 47.29
+      }
+    }
+  },
+  "ceiling": {
+    "transformer": {
+      "fraud scored > 0.99": 0.9566433566433566,
+      "cutoff at 0.6% alerts": 0.047030385583639145,
+      "normals above cutoff": 0.0021930220711232824
+    },
+    "transformer scratch": {
+      "fraud scored > 0.99": 0.8335664335664336,
+      "cutoff at 0.6% alerts": 0.4997558295726776,
+      "normals above cutoff": 0.002359214847518128
+    },
+    "xgboost": {
+      "fraud scored > 0.99": 0.7375291375291375,
+      "cutoff at 0.6% alerts": 0.01116131991147995,
+      "normals above cutoff": 0.0022327638220003107
+    },
+    "xgboost current-only": {
+      "fraud scored > 0.99": 0.413986013986014,
+      "cutoff at 0.6% alerts": 0.7379208207130432,
+      "normals above cutoff": 0.002893922041136325
+    }
+  },
+  "amount_separation": {
+    "fraud median amt": 371.94,
+    "normal median amt": 47.15,
+    "fraud share with amt > 200": 0.7510489510489511,
+    "normal share with amt > 200": 0.04288134919631341
+  },
+  "runtime": {
+    "where": "laptop",
+    "gpu": null,
+    "device": "cpu",
+    "accelerator": "mps",
+    "fp16": false,
+    "machine": "Darwin arm64 12 cores"
+  }
+}
