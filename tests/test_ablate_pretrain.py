@@ -1,5 +1,5 @@
 from tfm.ablate import run_name, run_paths
-from tfm.ablate_pretrain import ARMS, arm_tokenizer_config, finetune_spec, pretrained_dir, snapshot_steps
+from tfm.ablate_pretrain import ARMS, GROUPS, arm_tokenizer_config, finetune_spec, pretrained_dir, snapshot_steps
 
 
 def test_arms_change_one_thing_each_against_the_step2_tokenizer():
@@ -10,7 +10,12 @@ def test_arms_change_one_thing_each_against_the_step2_tokenizer():
     assert arm_tokenizer_config("C_no_dt") == {**base, "use_dt": False}
     assert arm_tokenizer_config("D_mlm") == base
     assert [ARMS[a]["objective"] for a in ARMS] == ["clm", "clm", "clm", "mlm"]
-    assert [ARMS[a]["snapshots"] for a in ARMS] == [True, False, False, False]
+
+
+def test_groups_are_self_contained_and_each_carries_its_own_control():
+    assert list(GROUPS) == ["tokenizer", "objective"]
+    assert GROUPS["tokenizer"] == {"arms": ["A_ref", "B_linear", "C_no_dt"], "snapshots": None}
+    assert GROUPS["objective"] == {"arms": ["A_ref", "D_mlm"], "snapshots": "A_ref"}
 
 
 def test_snapshot_steps_are_log_spaced_multiples_of_the_save_interval():
@@ -20,15 +25,16 @@ def test_snapshot_steps_are_log_spaced_multiples_of_the_save_interval():
     assert snapshot_steps(400, 500, 5) == []
 
 
-def test_finetune_spec_names_and_paths_and_the_snapshot_variant():
-    r = finetune_spec("B_linear", seed=2)
+def test_finetune_spec_names_and_paths_carry_the_group_so_two_machines_never_collide():
+    r = finetune_spec("tokenizer", "B_linear", seed=2)
     assert r["history"] == 12 and r["pooling"] == "last" and r["init"] == "pretrained" and r["arch"] == "gpt2" and r["snapshot"] is None
-    assert run_name(r) == "06c_B_linear_seed2"
-    assert run_paths(r, "/r", "/r/results") == ("/r/ablate_pre/B_linear/finetune/seed2", "/r/results/06c_B_linear_seed2.json")
-    assert pretrained_dir(r, "/r") == "/r/ablate_pre/B_linear/pretrain/best"
-    d = finetune_spec("D_mlm", seed=0)
-    assert d["arch"] == "bert"
-    s = finetune_spec("A_ref", seed=0, snapshot=2000)
-    assert run_name(s) == "06c_A_ref_snap2000_seed0"
-    assert run_paths(s, "/r", "/r/results")[0] == "/r/ablate_pre/A_ref/finetune_snap2000/seed0"
-    assert pretrained_dir(s, "/r") == "/r/ablate_pre/A_ref/snapshots/snap-2000"
+    assert run_name(r) == "06c_tokenizer_B_linear_seed2"
+    assert run_paths(r, "/r", "/r/results") == ("/r/ablate_pre/tokenizer/B_linear/finetune/seed2", "/r/results/06c_tokenizer_B_linear_seed2.json")
+    assert pretrained_dir(r, "/r") == "/r/ablate_pre/tokenizer/B_linear/pretrain/best"
+    assert finetune_spec("objective", "D_mlm", seed=0)["arch"] == "bert"
+    s = finetune_spec("objective", "A_ref", seed=0, snapshot=2000)
+    assert run_name(s) == "06c_objective_A_ref_snap2000_seed0"
+    assert run_paths(s, "/r", "/r/results")[0] == "/r/ablate_pre/objective/A_ref/finetune_snap2000/seed0"
+    assert pretrained_dir(s, "/r") == "/r/ablate_pre/objective/A_ref/snapshots/snap-2000"
+    a_tok, a_obj = finetune_spec("tokenizer", "A_ref", 0), finetune_spec("objective", "A_ref", 0)
+    assert run_name(a_tok) != run_name(a_obj) and run_paths(a_tok, "/r", "/r/results")[0] != run_paths(a_obj, "/r", "/r/results")[0]

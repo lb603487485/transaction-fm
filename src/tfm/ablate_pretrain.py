@@ -7,12 +7,19 @@
     C_no_dt    no time-gap token          CLM         tokenizer ablation 2
     D_mlm      step 2's                   MLM         WF (decoder) vs Wealthsimple (MLM for event-level anomalies)
 
-Each arm: fit its tokenizer on train rows, encode, cut windows, pretrain (resumable, json completion marker),
-then fine-tune H12 last-token with three seeds through ablate.finetune_run. Arm A also fine-tunes five
-log-spaced snapshots of its own pretraining (seed 0 each): perplexity at the snapshot against test PR-AUC
-after fine-tuning is the Wealthsimple "intrinsic vs extrinsic" check.
+Two groups, each a self-contained comparison with its own control arm A, so the two can run on two
+machines at the same time (same-machine rule) without ever writing the same file:
 
-Folders under root: ablate_pre/<arm>/{data,pretrain,snapshots,finetune/seed<k>,finetune_snap<step>/seed0}.
+    tokenizer   A_ref, B_linear, C_no_dt                      3 pretrains + 9 fine-tunes
+    objective   A_ref, D_mlm; A leaves snapshots              2 pretrains + 6 fine-tunes + 5 snapshot fine-tunes
+
+Each arm: fit its tokenizer on train rows, encode, cut windows, pretrain (resumable, json completion marker),
+then fine-tune H12 last-token with three seeds through ablate.finetune_run. In the objective group arm A also
+fine-tunes five log-spaced snapshots of its own pretraining (seed 0 each): perplexity at the snapshot against
+test PR-AUC after fine-tuning is the Wealthsimple "intrinsic vs extrinsic" check.
+
+Folders under root: ablate_pre/<group>/<arm>/{data,pretrain,snapshots,finetune/seed<k>,finetune_snap<step>/seed0};
+result files 06c_<group>_... so the two groups' jsons never collide in results/metrics.
 """
 from __future__ import annotations
 
@@ -31,10 +38,14 @@ from tfm.tokenizer import TransactionTokenizer, make_windows
 
 BASE_TOKENIZER = dict(use_dt=True, use_dist=True, amt_binning="log", n_amt_bins=20, n_dist_bins=8, top_merchants=500)
 ARMS = {
-    "A_ref": {"tokenizer": {}, "objective": "clm", "snapshots": True},
-    "B_linear": {"tokenizer": {"amt_binning": "linear"}, "objective": "clm", "snapshots": False},
-    "C_no_dt": {"tokenizer": {"use_dt": False}, "objective": "clm", "snapshots": False},
-    "D_mlm": {"tokenizer": {}, "objective": "mlm", "snapshots": False},
+    "A_ref": {"tokenizer": {}, "objective": "clm"},
+    "B_linear": {"tokenizer": {"amt_binning": "linear"}, "objective": "clm"},
+    "C_no_dt": {"tokenizer": {"use_dt": False}, "objective": "clm"},
+    "D_mlm": {"tokenizer": {}, "objective": "mlm"},
+}
+GROUPS = {
+    "tokenizer": {"arms": ["A_ref", "B_linear", "C_no_dt"], "snapshots": None},
+    "objective": {"arms": ["A_ref", "D_mlm"], "snapshots": "A_ref"},
 }
 SEQ_LEN, STRIDE, HISTORY, SEEDS = 512, 256, 12, (0, 1, 2)
 
@@ -52,24 +63,25 @@ def snapshot_steps(max_steps: int, save_steps: int, n: int = 5) -> list[int]:
     return sorted({int(round(s / save_steps)) * save_steps for s in raw})
 
 
-def finetune_spec(arm: str, seed: int, snapshot: int | None = None) -> dict:
+def finetune_spec(group: str, arm: str, seed: int, snapshot: int | None = None) -> dict:
     tag = f"{arm}_snap{snapshot}" if snapshot is not None else arm
     sub = f"finetune_snap{snapshot}" if snapshot is not None else "finetune"
-    return {"arm": arm, "snapshot": snapshot, "history": HISTORY, "pooling": "last", "init": "pretrained", "seed": seed,
+    return {"group": group, "arm": arm, "snapshot": snapshot, "history": HISTORY, "pooling": "last", "init": "pretrained", "seed": seed,
             "arch": "bert" if ARMS[arm]["objective"] == "mlm" else "gpt2",
-            "name": f"06c_{tag}_seed{seed}", "out_rel": f"ablate_pre/{arm}/{sub}/seed{seed}"}
+            "name": f"06c_{group}_{tag}_seed{seed}", "out_rel": f"ablate_pre/{group}/{arm}/{sub}/seed{seed}"}
 
 
 def pretrained_dir(r: dict, root: str) -> str:
+    base = f"{root}/ablate_pre/{r['group']}/{r['arm']}"
     if r.get("snapshot") is not None:
-        return f"{root}/ablate_pre/{r['arm']}/snapshots/snap-{r['snapshot']}"
-    return f"{root}/ablate_pre/{r['arm']}/pretrain/best"
+        return f"{base}/snapshots/snap-{r['snapshot']}"
+    return f"{base}/pretrain/best"
 
 
 # ---- data per arm ---------------------------------------------------------------------------------------------
-def arm_data(arm: str, df, root: str, log=print):
-    """The arm's tokenizer (fit on train rows only) and its train / val windows, cached under ablate_pre/<arm>/data."""
-    d = f"{root}/ablate_pre/{arm}/data"; os.makedirs(d, exist_ok=True)
+def arm_data(group: str, arm: str, df, root: str, log=print):
+    """The arm's tokenizer (fit on train rows only) and its train / val windows, cached under ablate_pre/<group>/<arm>/data."""
+    d = f"{root}/ablate_pre/{group}/{arm}/data"; os.makedirs(d, exist_ok=True)
     tp = f"{d}/tokenizer.json"
     if all(os.path.exists(f"{d}/{f}") for f in ("tokenizer.json", "tokens_train.npy", "tokens_val.npy")):
         tok = TransactionTokenizer.load(tp)
@@ -108,16 +120,17 @@ def snapshot_callback(dest: str, tokenizer_json: str, n: int = 5):
     return Snapshot()
 
 
-def pretrain_arm(arm: str, df, root: str, results_dir: str, epochs: int = 8, log=print,
+def pretrain_arm(group: str, arm: str, df, root: str, results_dir: str, epochs: int = 8, log=print,
                  overrides: dict | None = None, cfg_overrides: dict | None = None) -> dict:
-    """Pretrain one arm end to end, resumable; a finished arm is returned from its json without training."""
+    """Pretrain one arm of one group end to end, resumable; a finished arm is returned from its json without training."""
     import torch
     from transformers import PrinterCallback, Trainer
     from tfm.pretrain import print_progress_callback
     from tfm.runtime import describe
 
-    name = f"06c_pretrain_{arm}"; base = f"{root}/ablate_pre/{arm}"; out, res = f"{base}/pretrain", f"{results_dir}/{name}.json"
-    tok, train_w, val_w = arm_data(arm, df, root, log)
+    name = f"06c_{group}_pretrain_{arm}"; base = f"{root}/ablate_pre/{group}/{arm}"; out, res = f"{base}/pretrain", f"{results_dir}/{name}.json"
+    snapshots = GROUPS[group]["snapshots"] == arm
+    tok, train_w, val_w = arm_data(group, arm, df, root, log)
     if os.path.exists(res):
         log(f"{name}: done earlier, skipped"); return json.load(open(res))
     v = tok.vocab; PAD, BOS, MASK, V = v["<PAD>"], v["<BOS>"], v["<MASK>"], len(v)
@@ -137,7 +150,7 @@ def pretrain_arm(arm: str, df, root: str, results_dir: str, epochs: int = 8, log
                     eval_accumulation_steps=8, dataloader_num_workers=2, disable_tqdm=True)       # step 3's values
     settings.update(overrides or {})
     args = training_args(out, seed=0, **settings)
-    callbacks = [print_progress_callback()] + ([snapshot_callback(f"{base}/snapshots", f"{base}/data/tokenizer.json")] if ARMS[arm]["snapshots"] else [])
+    callbacks = [print_progress_callback()] + ([snapshot_callback(f"{base}/snapshots", f"{base}/data/tokenizer.json")] if snapshots else [])
     trainer = Trainer(model=model, args=args, train_dataset=train_ds, eval_dataset=val_ds, compute_metrics=compute_metrics_fn(fields, shift=shift),
                       preprocess_logits_for_metrics=argmax_logits, callbacks=callbacks)
     trainer.remove_callback(PrinterCallback)
@@ -150,8 +163,8 @@ def pretrain_arm(arm: str, df, root: str, results_dir: str, epochs: int = 8, log
         log(f"  {k:18s}", val or "ok")
     trainer.save_model(f"{out}/best"); shutil.copy(f"{base}/data/tokenizer.json", f"{out}/best/tokenizer.json")
     s = summarize(trainer.state.log_history, prior_accuracy(train_w, fields, PAD), n_params, len(train_ds), train_w.shape[1], epochs)
-    snaps = sorted(int(p.name.split("-")[1]) for p in Path(f"{base}/snapshots").glob("snap-*")) if ARMS[arm]["snapshots"] else []
-    summary = {"name": name, "arm": arm, "objective": obj, "tokenizer_config": tok.config, "vocab_size": V, "tokens_per_tx": tok.tokens_per_tx,
+    snaps = sorted(int(p.name.split("-")[1]) for p in Path(f"{base}/snapshots").glob("snap-*")) if snapshots else []
+    summary = {"name": name, "group": group, "arm": arm, "objective": obj, "tokenizer_config": tok.config, "vocab_size": V, "tokens_per_tx": tok.tokens_per_tx,
                **s, "snapshots": snaps, "checkpoints_ok": all(not val for val in problems.values()),
                "wall_min": round((time.time() - t0) / 60, 1), "runtime": describe()}
     with open(res, "w") as f:
