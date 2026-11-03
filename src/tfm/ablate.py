@@ -35,11 +35,12 @@ RUNS = ([{"history": 12, "pooling": "last", "init": "pretrained", "seed": 0}]
 
 
 def run_name(r: dict) -> str:
-    return f"06b_H{r['history']}_{r['pooling']}_seed{r['seed']}"
+    return r.get("name") or f"06b_H{r['history']}_{r['pooling']}_seed{r['seed']}"
 
 
 def run_paths(r: dict, root: str, results_dir: str) -> tuple[str, str]:
-    return f"{root}/ablate/H{r['history']}_{r['pooling']}/seed{r['seed']}", f"{results_dir}/{run_name(r)}.json"
+    out = f"{root}/{r['out_rel']}" if r.get("out_rel") else f"{root}/ablate/H{r['history']}_{r['pooling']}/seed{r['seed']}"
+    return out, f"{results_dir}/{run_name(r)}.json"
 
 
 def best_checkpoint(out_dir: Path) -> Path | None:
@@ -91,7 +92,11 @@ def __getattr__(name):                                   # lazy, so importing tf
     raise AttributeError(name)
 
 
-def load_model(init: str, pooling: str, pretrained_dir: str | None, vocab_size: int, pad_id: int, bos_id: int):
+def load_model(init: str, pooling: str, pretrained_dir: str | None, vocab_size: int, pad_id: int, bos_id: int, arch: str = "gpt2"):
+    if arch == "bert":                                       # step 6c, the MLM arm: encoder body, last-token head
+        from tfm.mlm import load_bert_classifier
+        assert init == "pretrained" and pooling == "last", (init, pooling)
+        return load_bert_classifier(pretrained_dir, pad_id)
     if pooling == "last":
         return load_classifier(init, pretrained_dir, vocab_size, pad_id, bos_id)
     if pooling != "mean":
@@ -142,7 +147,7 @@ def finetune_run(r: dict, ids_all, card, split, fraud, pad_id: int, bos_id: int,
     Xv, yv, iv = examples[("val", H)]; Xt, yt, it = examples[("test", H)]
     Xtr, ytr, _ = build_examples(ids_all, card, split, fraud, "train", H, pad_id, bos_id, neg_keep_rate=keep, seed=seed)
     log(f"\n==== {name} ====  {len(ytr):,} train examples ({int(ytr.sum()):,} fraud), sequence length {Xtr.shape[1]}, accelerator {accelerator()}")
-    model = load_model(r["init"], r["pooling"], pretrained_dir, vocab_size, pad_id, bos_id)
+    model = load_model(r["init"], r["pooling"], pretrained_dir, vocab_size, pad_id, bos_id, arch=r.get("arch", "gpt2"))
     trainer = Trainer(model=model, args=finetune_args(out, seed=seed, **(overrides or {})), train_dataset=ClassificationDataset(Xtr, ytr, pad_id),
                       eval_dataset=ClassificationDataset(Xv, yv, pad_id), compute_metrics=compute_metrics_fn(card[iv], alert),
                       callbacks=[print_progress_callback()])

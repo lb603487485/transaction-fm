@@ -39,10 +39,11 @@ def field_of(id2tok: list[str]) -> np.ndarray:
     return np.array(["special" if t.startswith("<") else t.split("_")[0] for t in id2tok])
 
 
-def per_field_accuracy(pred_ids: np.ndarray, label_ids: np.ndarray, fields: np.ndarray) -> dict[str, float]:
-    """pred_ids[:, t] is the model's guess for label_ids[:, t + 1]; positions with label -100 are skipped."""
-    pred = np.asarray(pred_ids)[:, :-1].ravel()
-    lab = np.asarray(label_ids)[:, 1:].ravel()
+def per_field_accuracy(pred_ids: np.ndarray, label_ids: np.ndarray, fields: np.ndarray, shift: bool = True) -> dict[str, float]:
+    """CLM (shift=True): pred_ids[:, t] is the model's guess for label_ids[:, t + 1]. MLM (shift=False): pred_ids[:, t]
+    guesses label_ids[:, t], the masked token at that position. Positions with label -100 are skipped either way."""
+    pred = np.asarray(pred_ids)[:, :-1].ravel() if shift else np.asarray(pred_ids).ravel()
+    lab = np.asarray(label_ids)[:, 1:].ravel() if shift else np.asarray(label_ids).ravel()
     keep = lab != IGNORE
     pred, lab = pred[keep], lab[keep]
     hit = pred == lab
@@ -122,12 +123,12 @@ def argmax_logits(logits, labels):
     return logits.argmax(dim=-1)
 
 
-def compute_metrics_fn(fields: np.ndarray):
-    """compute_metrics for the Trainer: per-field next-token accuracy, keys eval_acc_<field>."""
+def compute_metrics_fn(fields: np.ndarray, shift: bool = True):
+    """compute_metrics for the Trainer: per-field next-token (or masked-token) accuracy, keys eval_acc_<field>."""
 
     def compute_metrics(eval_pred):
         pred, lab = eval_pred.predictions, eval_pred.label_ids
-        return {f"acc_{k}": v for k, v in per_field_accuracy(pred, lab, fields).items()}
+        return {f"acc_{k}": v for k, v in per_field_accuracy(pred, lab, fields, shift=shift).items()}
 
     return compute_metrics
 
