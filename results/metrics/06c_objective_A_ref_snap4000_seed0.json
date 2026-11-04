@@ -1,0 +1,53 @@
+{
+  "name": "06c_objective_A_ref_snap4000_seed0",
+  "group": "objective",
+  "arm": "A_ref",
+  "snapshot": 4000,
+  "history": 12,
+  "pooling": "last",
+  "init": "pretrained",
+  "seed": 0,
+  "arch": "gpt2",
+  "out_rel": "ablate_pre/objective/A_ref/finetune_snap4000/seed0",
+  "neg_keep_rate": 0.05,
+  "alert_rate": 0.006,
+  "n_train_examples": 67288,
+  "n_train_fraud": 7017,
+  "seq_len": 92,
+  "best_step": 3156,
+  "val_at_best": {
+    "loss": 0.0038470737636089325,
+    "pr_auc": 0.9835855780251695,
+    "roc_auc": 0.9994865846446505,
+    "recall_at_alert": 0.9652351738241309,
+    "card_discovery": 0.9811320754716981,
+    "fp_ratio": 0.06779661016949153,
+    "alert_rate": 0.006,
+    "n": 83971,
+    "n_fraud": 489,
+    "runtime": 62.5456,
+    "samples_per_second": 1342.557,
+    "steps_per_second": 5.26
+  },
+  "test": {
+    "pr_auc": 0.9826629243941399,
+    "roc_auc": 0.999538264690891,
+    "recall_at_alert": 0.9869463869463869,
+    "card_discovery": 1.0,
+    "fp_ratio": 0.5748700991969768,
+    "alert_rate": 0.006,
+    "n": 555719,
+    "n_fraud": 2145
+  },
+  "mean_prob_test_corrected": 0.004020235314220822,
+  "checkpoints_ok": true,
+  "wall_min": 22.3,
+  "runtime": {
+    "where": "laptop",
+    "gpu": null,
+    "device": "cpu",
+    "accelerator": "mps",
+    "fp16": false,
+    "machine": "Darwin arm64 12 cores"
+  }
+}

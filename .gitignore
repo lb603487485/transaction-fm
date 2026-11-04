@@ -7,6 +7,7 @@ pretrain/
 finetune/
 baseline/
 ablate/
+ablate_pre/
 /results/*.json
 /results/*.png
 *.npy

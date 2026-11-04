@@ -1,0 +1,53 @@
+{
+  "name": "06c_tokenizer_A_ref_seed1",
+  "group": "tokenizer",
+  "arm": "A_ref",
+  "snapshot": null,
+  "history": 12,
+  "pooling": "last",
+  "init": "pretrained",
+  "seed": 1,
+  "arch": "gpt2",
+  "out_rel": "ablate_pre/tokenizer/A_ref/finetune/seed1",
+  "neg_keep_rate": 0.05,
+  "alert_rate": 0.006,
+  "n_train_examples": 67591,
+  "n_train_fraud": 7017,
+  "seq_len": 92,
+  "best_step": 3171,
+  "val_at_best": {
+    "loss": 0.0037620060611516237,
+    "pr_auc": 0.9897745182206446,
+    "roc_auc": 0.9996041907862141,
+    "recall_at_alert": 0.9693251533742331,
+    "card_discovery": 0.9811320754716981,
+    "fp_ratio": 0.06329113924050633,
+    "alert_rate": 0.006,
+    "n": 83971,
+    "n_fraud": 489,
+    "runtime": 64.899,
+    "samples_per_second": 1293.872,
+    "steps_per_second": 5.069
+  },
+  "test": {
+    "pr_auc": 0.9825345557387254,
+    "roc_auc": 0.9995324086988435,
+    "recall_at_alert": 0.9836829836829837,
+    "card_discovery": 0.9954128440366973,
+    "fp_ratio": 0.5800947867298578,
+    "alert_rate": 0.006,
+    "n": 555719,
+    "n_fraud": 2145
+  },
+  "mean_prob_test_corrected": 0.004043381424000573,
+  "checkpoints_ok": true,
+  "wall_min": 23.2,
+  "runtime": {
+    "where": "laptop",
+    "gpu": null,
+    "device": "cpu",
+    "accelerator": "mps",
+    "fp16": false,
+    "machine": "Darwin arm64 12 cores"
+  }
+}
