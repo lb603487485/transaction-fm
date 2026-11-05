@@ -92,7 +92,11 @@ def __getattr__(name):                                   # lazy, so importing tf
     raise AttributeError(name)
 
 
-def load_model(init: str, pooling: str, pretrained_dir: str | None, vocab_size: int, pad_id: int, bos_id: int, arch: str = "gpt2"):
+def load_model(init: str, pooling: str, pretrained_dir: str | None, vocab_size: int, pad_id: int, bos_id: int, arch: str = "gpt2", n_feats: int = 0):
+    if arch == "hybrid":                                     # step 6e: GPT2 body, last-token vector + raw features into the head
+        from tfm.hybrid import load_hybrid
+        assert init == "pretrained" and pooling == "last", (init, pooling)
+        return load_hybrid(pretrained_dir, pad_id, n_feats)
     if arch == "bert":                                       # step 6c, the MLM arm: encoder body, last-token head
         from tfm.mlm import load_bert_classifier
         assert init == "pretrained" and pooling == "last", (init, pooling)
@@ -140,8 +144,8 @@ def freeze_body(model) -> None:
             mod.p = 0.0
 
 
-def score_test(model, X: np.ndarray, pad_id: int, device: str, batch_size: int = 256) -> np.ndarray:
-    """Fraud probability per row of X (int16 token matrix), plain forward passes in eval mode."""
+def score_test(model, X: np.ndarray, pad_id: int, device: str, batch_size: int = 256, feats: np.ndarray | None = None) -> np.ndarray:
+    """Fraud probability per row of X (int16 token matrix), plain forward passes in eval mode; feats for the hybrid head."""
     import torch
 
     model = model.to(device).eval()
@@ -149,16 +153,18 @@ def score_test(model, X: np.ndarray, pad_id: int, device: str, batch_size: int =
     with torch.no_grad():
         for i in range(0, len(X), batch_size):
             ids = torch.as_tensor(X[i:i + batch_size].astype(np.int64), device=device)
-            logits = model(input_ids=ids, attention_mask=(ids != pad_id).long()).logits.float()
+            extra = {"feats": torch.as_tensor(feats[i:i + batch_size], dtype=torch.float32, device=device)} if feats is not None else {}
+            logits = model(input_ids=ids, attention_mask=(ids != pad_id).long(), **extra).logits.float()
             out.append(torch.softmax(logits, dim=-1)[:, 1].cpu().numpy())
     return np.concatenate(out).astype(np.float32)
 
 
 def finetune_run(r: dict, ids_all, card, split, fraud, pad_id: int, bos_id: int, vocab_size: int, pretrained_dir: str,
                  root: str, results_dir: str, examples: dict, keep: float = 0.05, alert: float = 0.006, log=print,
-                 overrides: dict | None = None) -> dict:
+                 overrides: dict | None = None, feats_all: np.ndarray | None = None) -> dict:
     """One ablation run. examples caches (X, y, idx) for val and test per history length. Returns the summary
-    (also written to the run's json); a run whose json exists is returned from that json without training."""
+    (also written to the run's json); a run whose json exists is returned from that json without training.
+    feats_all (n_rows x k, aligned with ids_all) is required for arch "hybrid" and ignored otherwise."""
     import torch
     from transformers import PrinterCallback, Trainer
     from tfm.pretrain import print_progress_callback
@@ -172,17 +178,25 @@ def finetune_run(r: dict, ids_all, card, split, fraud, pad_id: int, bos_id: int,
         if (s, H) not in examples:
             examples[(s, H)] = build_examples(ids_all, card, split, fraud, s, H, pad_id, bos_id)
     Xv, yv, iv = examples[("val", H)]; Xt, yt, it = examples[("test", H)]
-    Xtr, ytr, _ = build_examples(ids_all, card, split, fraud, "train", H, pad_id, bos_id, neg_keep_rate=keep, seed=seed)
+    Xtr, ytr, itr = build_examples(ids_all, card, split, fraud, "train", H, pad_id, bos_id, neg_keep_rate=keep, seed=seed)
+    hybrid = r.get("arch") == "hybrid"
+    if hybrid:
+        from tfm.hybrid import HybridDataset
+        assert feats_all is not None, "the hybrid arm needs feats_all"
+        dataset = lambda X, y, idx: HybridDataset(X, y, pad_id, feats_all[idx])
+    else:
+        dataset = lambda X, y, idx: ClassificationDataset(X, y, pad_id)
     log(f"\n==== {name} ====  {len(ytr):,} train examples ({int(ytr.sum()):,} fraud), sequence length {Xtr.shape[1]}, accelerator {accelerator()}")
-    model = load_model(r["init"], r["pooling"], pretrained_dir, vocab_size, pad_id, bos_id, arch=r.get("arch", "gpt2"))
+    model = load_model(r["init"], r["pooling"], pretrained_dir, vocab_size, pad_id, bos_id, arch=r.get("arch", "gpt2"),
+                       n_feats=feats_all.shape[1] if hybrid else 0)
     if r.get("freeze"):
         freeze_body(model)
     params = trainable_summary(model)
     args = finetune_args(out, seed=seed, **(overrides or {}))
     log(f"trainable {params['trainable']:,} of {params['total']:,} parameters ({'head only' if r.get('freeze') else 'all'}), lr {args.learning_rate:g}, "
         f"{args.num_train_epochs:g} epochs, neg_keep_rate {keep}")
-    trainer = Trainer(model=model, args=args, train_dataset=ClassificationDataset(Xtr, ytr, pad_id),
-                      eval_dataset=ClassificationDataset(Xv, yv, pad_id), compute_metrics=compute_metrics_fn(card[iv], alert),
+    trainer = Trainer(model=model, args=args, train_dataset=dataset(Xtr, ytr, itr),
+                      eval_dataset=dataset(Xv, yv, iv), compute_metrics=compute_metrics_fn(card[iv], alert),
                       callbacks=[print_progress_callback()])
     trainer.remove_callback(PrinterCallback)
     last = find_latest_checkpoint(out)
@@ -193,7 +207,7 @@ def finetune_run(r: dict, ids_all, card, split, fraud, pad_id: int, bos_id: int,
     for k, v in problems.items():
         log(f"  {k:18s}", v or "ok")
     best = best_eval(trainer.state.log_history)
-    p_test = score_test(trainer.model, Xt, pad_id, str(trainer.model.device))
+    p_test = score_test(trainer.model, Xt, pad_id, str(trainer.model.device), feats=feats_all[it] if hybrid else None)
     np.save(f"{out}/test_scores.npy", p_test)
     test_m = evaluate_scores(yt, p_test, card[it], alert)
     summary = {"name": name, **r, "neg_keep_rate": keep, "alert_rate": alert, "n_train_examples": int(len(ytr)), "n_train_fraud": int(ytr.sum()),
