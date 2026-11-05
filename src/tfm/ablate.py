@@ -113,6 +113,33 @@ def load_model(init: str, pooling: str, pretrained_dir: str | None, vocab_size: 
     return model
 
 
+def trainable_summary(model) -> dict:
+    """Parameter counts by part (wte, wpe, h, ln_f, score, ...) plus total and trainable: printed before every
+    fine-tuning run so the notebook states what is being trained."""
+    out: dict = {}
+    for n, p in model.named_parameters():
+        parts = n.split(".")
+        key = parts[1] if parts[0] in ("transformer", "bert") and len(parts) > 1 else parts[0]
+        out[key] = out.get(key, 0) + p.numel()
+    out["total"] = sum(p.numel() for p in model.parameters())
+    out["trainable"] = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    return out
+
+
+def freeze_body(model) -> None:
+    """Linear probe: only the classification head (score) keeps gradients, and the frozen body runs without
+    dropout (a probe measures the representation, not a noisy copy of it; the MPS attention kernel also has no
+    dropout path once nothing in the body needs gradients)."""
+    from torch import nn
+
+    for n, p in model.named_parameters():
+        p.requires_grad = n.startswith("score")
+    body = getattr(model, "transformer", None) or getattr(model, "bert", model)
+    for mod in body.modules():
+        if isinstance(mod, nn.Dropout):
+            mod.p = 0.0
+
+
 def score_test(model, X: np.ndarray, pad_id: int, device: str, batch_size: int = 256) -> np.ndarray:
     """Fraud probability per row of X (int16 token matrix), plain forward passes in eval mode."""
     import torch
@@ -148,7 +175,13 @@ def finetune_run(r: dict, ids_all, card, split, fraud, pad_id: int, bos_id: int,
     Xtr, ytr, _ = build_examples(ids_all, card, split, fraud, "train", H, pad_id, bos_id, neg_keep_rate=keep, seed=seed)
     log(f"\n==== {name} ====  {len(ytr):,} train examples ({int(ytr.sum()):,} fraud), sequence length {Xtr.shape[1]}, accelerator {accelerator()}")
     model = load_model(r["init"], r["pooling"], pretrained_dir, vocab_size, pad_id, bos_id, arch=r.get("arch", "gpt2"))
-    trainer = Trainer(model=model, args=finetune_args(out, seed=seed, **(overrides or {})), train_dataset=ClassificationDataset(Xtr, ytr, pad_id),
+    if r.get("freeze"):
+        freeze_body(model)
+    params = trainable_summary(model)
+    args = finetune_args(out, seed=seed, **(overrides or {}))
+    log(f"trainable {params['trainable']:,} of {params['total']:,} parameters ({'head only' if r.get('freeze') else 'all'}), lr {args.learning_rate:g}, "
+        f"{args.num_train_epochs:g} epochs, neg_keep_rate {keep}")
+    trainer = Trainer(model=model, args=args, train_dataset=ClassificationDataset(Xtr, ytr, pad_id),
                       eval_dataset=ClassificationDataset(Xv, yv, pad_id), compute_metrics=compute_metrics_fn(card[iv], alert),
                       callbacks=[print_progress_callback()])
     trainer.remove_callback(PrinterCallback)
@@ -166,6 +199,7 @@ def finetune_run(r: dict, ids_all, card, split, fraud, pad_id: int, bos_id: int,
     summary = {"name": name, **r, "neg_keep_rate": keep, "alert_rate": alert, "n_train_examples": int(len(ytr)), "n_train_fraud": int(ytr.sum()),
                "seq_len": int(Xtr.shape[1]), "best_step": best["step"], "val_at_best": {k[len("eval_"):]: v for k, v in best.items() if k.startswith("eval_")},
                "test": test_m, "mean_prob_test_corrected": float(correct_for_sampling(p_test, keep).mean()),
+               "trainable_params": params["trainable"], "total_params": params["total"], "learning_rate": args.learning_rate, "epochs": args.num_train_epochs,
                "checkpoints_ok": all(not v for v in problems.values()), "wall_min": round((time.time() - t0) / 60, 1), "runtime": describe()}
     with open(res, "w") as f:
         json.dump(summary, f, indent=2)

@@ -8,6 +8,7 @@ finetune/
 baseline/
 ablate/
 ablate_pre/
+extras/
 /results/*.json
 /results/*.png
 *.npy
