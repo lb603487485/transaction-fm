@@ -1,0 +1,375 @@
+{
+  "reference": {
+    "runs": [
+      "06b_H12_last_seed0",
+      "06b_H12_last_seed1",
+      "06b_H12_last_seed2"
+    ],
+    "aggregate": {
+      "pr_auc": {
+        "mean": 0.9844668417672696,
+        "sd": 0.002147864875018321,
+        "n_seeds": 3
+      },
+      "roc_auc": {
+        "mean": 0.9996356639827974,
+        "sd": 4.7698618800947565e-05,
+        "n_seeds": 3
+      },
+      "recall_at_alert": {
+        "mean": 0.987101787101787,
+        "sd": 0.0014986248268831204,
+        "n_seeds": 3
+      },
+      "card_discovery": {
+        "mean": 1.0,
+        "sd": 0.0,
+        "n_seeds": 3
+      },
+      "fp_ratio": {
+        "mean": 0.5746245839795722,
+        "sd": 0.0023887384291693273,
+        "n_seeds": 3
+      },
+      "alert_rate": {
+        "mean": 0.006000000000000001,
+        "sd": 1.0622968402425924e-18,
+        "n_seeds": 3
+      },
+      "n": {
+        "mean": 555719.0,
+        "sd": 0.0,
+        "n_seeds": 3
+      },
+      "n_fraud": {
+        "mean": 2145.0,
+        "sd": 0.0,
+        "n_seeds": 3
+      }
+    },
+    "runtime": {
+      "where": "laptop",
+      "gpu": null,
+      "device": "cpu",
+      "accelerator": "mps",
+      "fp16": false,
+      "machine": "Darwin arm64 12 cores"
+    }
+  },
+  "features": [
+    "log_amt",
+    "amt_z",
+    "amt_ratio_mean",
+    "gap_prev_s"
+  ],
+  "standardisation": {
+    "log_amt": {
+      "mean": 3.5334551289919434,
+      "std": 1.289301531774862
+    },
+    "amt_z": {
+      "mean": 0.030435720256462528,
+      "std": 2.951480419500424
+    },
+    "amt_ratio_mean": {
+      "mean": 1.0216538770051633,
+      "std": 2.6443914571448413
+    },
+    "gap_prev_s": {
+      "mean": 9.562084615070594,
+      "std": 1.4821085549177275
+    }
+  },
+  "head_params": 25026,
+  "total_params": 11086914,
+  "runs": [
+    {
+      "name": "06e_hybrid_seed0",
+      "exp": "hybrid",
+      "arch": "hybrid",
+      "history": 12,
+      "pooling": "last",
+      "init": "pretrained",
+      "seed": 0,
+      "lr": 5e-05,
+      "keep": 0.05,
+      "freeze": false,
+      "out_rel": "extras/hybrid/seed0",
+      "neg_keep_rate": 0.05,
+      "alert_rate": 0.006,
+      "n_train_examples": 67288,
+      "n_train_fraud": 7017,
+      "seq_len": 92,
+      "best_step": 2500,
+      "val_at_best": {
+        "loss": 0.003317132592201233,
+        "pr_auc": 0.9817498745999886,
+        "roc_auc": 0.9994150313141968,
+        "recall_at_alert": 0.9611451942740287,
+        "card_discovery": 0.9811320754716981,
+        "fp_ratio": 0.07234042553191489,
+        "alert_rate": 0.006,
+        "n": 83971,
+        "n_fraud": 489,
+        "runtime": 103.5319,
+        "samples_per_second": 811.064,
+        "steps_per_second": 3.178
+      },
+      "test": {
+        "pr_auc": 0.9854904610591453,
+        "roc_auc": 0.9996666101658388,
+        "recall_at_alert": 0.9864801864801864,
+        "card_discovery": 1.0,
+        "fp_ratio": 0.5756143667296786,
+        "alert_rate": 0.006,
+        "n": 555719,
+        "n_fraud": 2145
+      },
+      "mean_prob_test_corrected": 0.003861054441958948,
+      "trainable_params": 11086914,
+      "total_params": 11086914,
+      "learning_rate": 5e-05,
+      "epochs": 3,
+      "checkpoints_ok": true,
+      "wall_min": 44.6,
+      "runtime": {
+        "where": "laptop",
+        "gpu": null,
+        "device": "cpu",
+        "accelerator": "mps",
+        "fp16": false,
+        "machine": "Darwin arm64 12 cores"
+      }
+    },
+    {
+      "name": "06e_hybrid_seed1",
+      "exp": "hybrid",
+      "arch": "hybrid",
+      "history": 12,
+      "pooling": "last",
+      "init": "pretrained",
+      "seed": 1,
+      "lr": 5e-05,
+      "keep": 0.05,
+      "freeze": false,
+      "out_rel": "extras/hybrid/seed1",
+      "neg_keep_rate": 0.05,
+      "alert_rate": 0.006,
+      "n_train_examples": 67591,
+      "n_train_fraud": 7017,
+      "seq_len": 92,
+      "best_step": 2500,
+      "val_at_best": {
+        "loss": 0.003993919584900141,
+        "pr_auc": 0.9809475744945882,
+        "roc_auc": 0.9993151604041457,
+        "recall_at_alert": 0.9550102249488752,
+        "card_discovery": 0.9811320754716981,
+        "fp_ratio": 0.07922912205567452,
+        "alert_rate": 0.006,
+        "n": 83971,
+        "n_fraud": 489,
+        "runtime": 102.2096,
+        "samples_per_second": 821.557,
+        "steps_per_second": 3.219
+      },
+      "test": {
+        "pr_auc": 0.9827152323091378,
+        "roc_auc": 0.9996108938143788,
+        "recall_at_alert": 0.9855477855477855,
+        "card_discovery": 1.0,
+        "fp_ratio": 0.5771050141911069,
+        "alert_rate": 0.006,
+        "n": 555719,
+        "n_fraud": 2145
+      },
+      "mean_prob_test_corrected": 0.004012917944752301,
+      "trainable_params": 11086914,
+      "total_params": 11086914,
+      "learning_rate": 5e-05,
+      "epochs": 3,
+      "checkpoints_ok": true,
+      "wall_min": 44.6,
+      "runtime": {
+        "where": "laptop",
+        "gpu": null,
+        "device": "cpu",
+        "accelerator": "mps",
+        "fp16": false,
+        "machine": "Darwin arm64 12 cores"
+      }
+    },
+    {
+      "name": "06e_hybrid_seed2",
+      "exp": "hybrid",
+      "arch": "hybrid",
+      "history": 12,
+      "pooling": "last",
+      "init": "pretrained",
+      "seed": 2,
+      "lr": 5e-05,
+      "keep": 0.05,
+      "freeze": false,
+      "out_rel": "extras/hybrid/seed2",
+      "neg_keep_rate": 0.05,
+      "alert_rate": 0.006,
+      "n_train_examples": 67173,
+      "n_train_fraud": 7017,
+      "seq_len": 92,
+      "best_step": 3150,
+      "val_at_best": {
+        "loss": 0.003935912624001503,
+        "pr_auc": 0.9787080250714374,
+        "roc_auc": 0.9987017026655122,
+        "recall_at_alert": 0.9611451942740287,
+        "card_discovery": 0.9811320754716981,
+        "fp_ratio": 0.07234042553191489,
+        "alert_rate": 0.006,
+        "n": 83971,
+        "n_fraud": 489,
+        "runtime": 115.3423,
+        "samples_per_second": 728.016,
+        "steps_per_second": 2.852
+      },
+      "test": {
+        "pr_auc": 0.9843114638163847,
+        "roc_auc": 0.9995450495905719,
+        "recall_at_alert": 0.986013986013986,
+        "card_discovery": 1.0,
+        "fp_ratio": 0.5763593380614658,
+        "alert_rate": 0.006,
+        "n": 555719,
+        "n_fraud": 2145
+      },
+      "mean_prob_test_corrected": 0.004051656435633259,
+      "trainable_params": 11086914,
+      "total_params": 11086914,
+      "learning_rate": 5e-05,
+      "epochs": 3,
+      "checkpoints_ok": true,
+      "wall_min": 44.9,
+      "runtime": {
+        "where": "laptop",
+        "gpu": null,
+        "device": "cpu",
+        "accelerator": "mps",
+        "fp16": false,
+        "machine": "Darwin arm64 12 cores"
+      }
+    }
+  ],
+  "aggregate": {
+    "pr_auc": {
+      "mean": 0.9841723857282226,
+      "sd": 0.001392831895697436,
+      "n_seeds": 3
+    },
+    "roc_auc": {
+      "mean": 0.9996075178569299,
+      "sd": 6.085056434683764e-05,
+      "n_seeds": 3
+    },
+    "recall_at_alert": {
+      "mean": 0.9860139860139862,
+      "sd": 0.0004662004662004393,
+      "n_seeds": 3
+    },
+    "card_discovery": {
+      "mean": 1.0,
+      "sd": 0.0,
+      "n_seeds": 3
+    },
+    "fp_ratio": {
+      "mean": 0.5763595729940837,
+      "sd": 0.0007453237584839883,
+      "n_seeds": 3
+    },
+    "alert_rate": {
+      "mean": 0.006000000000000001,
+      "sd": 1.0622968402425924e-18,
+      "n_seeds": 3
+    },
+    "n": {
+      "mean": 555719.0,
+      "sd": 0.0,
+      "n_seeds": 3
+    },
+    "n_fraud": {
+      "mean": 2145.0,
+      "sd": 0.0,
+      "n_seeds": 3
+    }
+  },
+  "pr_auc_minus_ref": -0.00029445603904698636,
+  "in_ref_sd": -0.13709244118276978,
+  "recall_by_amt_z": [
+    {
+      "amt_z bucket": "<0",
+      "n fraud": 487,
+      "recall transformer (06b, seed 0)": 0.9630390143737166,
+      "recall hybrid (seed 0)": 0.9630390143737166,
+      "recall XGBoost 29 features (05, seed 0)": 0.9281314168377823
+    },
+    {
+      "amt_z bucket": "0-2",
+      "n fraud": 419,
+      "recall transformer (06b, seed 0)": 0.9904534606205251,
+      "recall hybrid (seed 0)": 0.9904534606205251,
+      "recall XGBoost 29 features (05, seed 0)": 0.9785202863961814
+    },
+    {
+      "amt_z bucket": "2-5",
+      "n fraud": 503,
+      "recall transformer (06b, seed 0)": 1.0,
+      "recall hybrid (seed 0)": 0.9980119284294234,
+      "recall XGBoost 29 features (05, seed 0)": 0.9940357852882704
+    },
+    {
+      "amt_z bucket": "5-10",
+      "n fraud": 615,
+      "recall transformer (06b, seed 0)": 0.9934959349593496,
+      "recall hybrid (seed 0)": 0.991869918699187,
+      "recall XGBoost 29 features (05, seed 0)": 1.0
+    },
+    {
+      "amt_z bucket": "10+",
+      "n fraud": 89,
+      "recall transformer (06b, seed 0)": 0.9887640449438202,
+      "recall hybrid (seed 0)": 0.9887640449438202,
+      "recall XGBoost 29 features (05, seed 0)": 1.0
+    },
+    {
+      "amt_z bucket": "no history",
+      "n fraud": 32,
+      "recall transformer (06b, seed 0)": 0.9375,
+      "recall hybrid (seed 0)": 1.0,
+      "recall XGBoost 29 features (05, seed 0)": 1.0
+    }
+  ],
+  "disagreement_rows": [
+    {
+      "rows": "XGBoost-only frauds (6a)",
+      "n": 8,
+      "flagged by reference seed 0": 2,
+      "flagged by hybrid seed 0": 4,
+      "median hybrid score": 0.05937489494681358,
+      "median reference score": 0.03307092934846878
+    },
+    {
+      "rows": "transformer-only frauds (6a)",
+      "n": 20,
+      "flagged by reference seed 0": 20,
+      "flagged by hybrid seed 0": 20,
+      "median hybrid score": 0.9982441067695618,
+      "median reference score": 0.9997197389602661
+    }
+  ],
+  "runtime": {
+    "where": "laptop",
+    "gpu": null,
+    "device": "cpu",
+    "accelerator": "mps",
+    "fp16": false,
+    "machine": "Darwin arm64 12 cores"
+  }
+}
