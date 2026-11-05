@@ -29,7 +29,7 @@ results/metrics/     small json files pushed back from Colab
 results/figures/     png charts used in README and report
 notebooks/           thin Colab drivers: mount, pull, install, run, plot
 tests/               pytest; runs on CPU without torch
-report/              3 to 4 page technical report
+report/              report.md: the 3 to 4 page write-up for the invest-or-not reader (steps 1 to 6c; 6d and 6e to be added)
 ```
 
 Data, token arrays and checkpoints never enter this repo. They live on Google Drive. Code reaches Colab by `git clone` with a single-repo token; small result files are pushed back from Colab, checkpoints and data stay on Drive:
