@@ -4,7 +4,7 @@ Mini Transaction Foundation Model: a GPT-2 style decoder pretrained with next-to
 
 Scaled-down reproduction of the recipe in the Wells Fargo talk "What It Takes to Build Production-Grade Foundation Models in Finance" (1B parameters, 8 x H200) at about 11M parameters on one free Colab T4. The point is not the absolute score; it is testing which of the talk's claims survive at small scale.
 
-Status: steps 1 to 4 run on Colab; steps 5, 6a and 6b run on the laptop (5 and 6a on 2026-11-02 on CPU, 6b on 2026-11-02 to 11-03 on Apple MPS, 7.2 hours for 15 runs); 6c (tokenizer and objective ablations, perplexity vs PR-AUC; two notebooks, one per group) run on the laptop 2026-11-03 on Apple MPS (7.2 h and 6.1 h, in parallel); 6d (learning rate, linear probe, sampling rate, seed ensemble, calibration; 7.5 h) and 6e (hybrid head; 2.2 h) run on the laptop 2026-11-05 on Apple MPS, in parallel; 7 (report/report.md) drafted from all of them.
+Status: steps 1 to 4 run on Colab; steps 5, 6a and 6b run on the laptop (5 and 6a on 2026-11-02 on CPU, 6b on 2026-11-02 to 11-03 on Apple MPS, 7.2 hours for 15 runs); 6c (tokenizer and objective ablations, perplexity vs PR-AUC; two notebooks, one per group) run on the laptop 2026-11-03 on Apple MPS (7.2 h and 6.1 h, in parallel); 6d (learning rate, linear probe, sampling rate, seed ensemble, calibration; 7.5 h) and 6e (hybrid head; 2.2 h) run on the laptop 2026-11-05 on Apple MPS, in parallel; 6f (every fine-tuning variant in one table, no training) run 2026-11-05; 7 (report/report.md) drafted from all of them.
 
 ## Layout
 
@@ -22,6 +22,7 @@ src/tfm/
   extras.py          step 6d: fine-tuning follow-ups from pretrain/best against 06b's H12 reference: learning-rate sweep selected on val, linear probe (body frozen, pretrained vs random body), sampling-rate arms
   hybrid.py          step 6e: hybrid head: GPT-2 body with the last token's vector concatenated with four standardised raw numbers of the judged row (log amount, amount z-score and ratio against the card's history, log gap), two-layer head; the experiment 6a's error analysis points at
   calibrate.py       step 6d: reliability table, expected calibration error, temperature scaling fitted on val (no training)
+  compare.py         step 6f: every fine-tuning variant in one table from results/metrics/*_seed<k>.json, each against its same-machine control in sd units; seed-ensemble rows from saved test scores (no training)
   mlm.py             step 6c: masked-token examples (15%, BERT's 80/10/10), BertConfig mirroring the GPT-2 sizes, BERT body with a last-token head
   ablate_pretrain.py step 6c: four arms that pretrain from scratch (A step-2 tokenizer CLM, B linear amount bins, C no time-gap token, D MLM) in two self-contained groups (tokenizer: A B C; objective: A D plus snapshots of A for the perplexity-vs-PR-AUC scatter), resumable pretrain_arm
 configs/             one yaml per run (seed, history length, bin counts)

@@ -86,8 +86,9 @@ Fine-tuning variants, all from the same pretrained body on the laptop, against t
 | negative sampling 2% and 10% instead of 5% | all | 0.9823 +- 0.0023 and 0.9856 +- 0.0015 | -1.0 and +0.5 sd | ranking does not depend on the sampling rate; probabilities do (section 6) |
 | hybrid head: last token plus raw amount, z-score, ratio and gap | 11.09M | 0.9842 +- 0.0014 | -0.1 sd | binning the amount loses nothing the head can use; recall by amount bucket matches the reference in every bucket |
 | mean of the three reference seeds | 3 models | 0.9867 | +0.002, 1.0 sd | recall at 0.6% 0.989; 477 of 555,719 test rows move by more than 0.5 between seeds |
+| mean of the three XGBoost seeds, for symmetry | 3 models | 0.9756 | +0.0005 over its own seeds | the tree's seeds agree (sd 0.0004), so averaging buys it little; ensemble against ensemble the gap is 0.011, the same as the single-model headline |
 
-The default configuration is the best or tied with the best on every axis tried; the hybrid head rules out the tokenizer explanation offered in section 6 for the frauds only XGBoost catches, except on the 32 frauds with no history at all, where the raw amount lifts recall from 0.94 to 1.00.
+The default configuration is the best or tied with the best on every axis tried (all 25 rows, including the single-seed learning rates, are in results/metrics/06f_compare_finetunes.json); the hybrid head rules out the tokenizer explanation offered in section 6 for the frauds only XGBoost catches, except on the 32 frauds with no history at all, where the raw amount lifts recall from 0.94 to 1.00.
 
 ## 6. Validation findings
 
