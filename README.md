@@ -4,7 +4,7 @@ Mini Transaction Foundation Model: a GPT-2 style decoder pretrained with next-to
 
 Scaled-down reproduction of the recipe in the Wells Fargo talk "What It Takes to Build Production-Grade Foundation Models in Finance" (1B parameters, 8 x H200) at about 11M parameters on one free Colab T4. The point is not the absolute score; it is testing which of the talk's claims survive at small scale.
 
-Status: steps 1 to 4 run on Colab; steps 5, 6a and 6b run on the laptop (5 and 6a on 2026-11-02 on CPU, 6b on 2026-11-02 to 11-03 on Apple MPS, 7.2 hours for 15 runs); 6c (tokenizer and objective ablations, perplexity vs PR-AUC; two notebooks, one per group) run on the laptop 2026-11-03 on Apple MPS (7.2 h and 6.1 h, in parallel); 6d (learning rate, linear probe, sampling rate, seed ensemble, calibration) and 6e (hybrid head) written, running on the laptop from 2026-11-05; 7 to follow.
+Status: steps 1 to 4 run on Colab; steps 5, 6a and 6b run on the laptop (5 and 6a on 2026-11-02 on CPU, 6b on 2026-11-02 to 11-03 on Apple MPS, 7.2 hours for 15 runs); 6c (tokenizer and objective ablations, perplexity vs PR-AUC; two notebooks, one per group) run on the laptop 2026-11-03 on Apple MPS (7.2 h and 6.1 h, in parallel); 6d (learning rate, linear probe, sampling rate, seed ensemble, calibration; 7.5 h) and 6e (hybrid head; 2.2 h) run on the laptop 2026-11-05 on Apple MPS, in parallel; 7 (report/report.md) drafted from all of them.
 
 ## Layout
 
@@ -29,7 +29,7 @@ results/metrics/     small json files pushed back from Colab
 results/figures/     png charts used in README and report
 notebooks/           thin Colab drivers: mount, pull, install, run, plot
 tests/               pytest; runs on CPU without torch
-report/              report.md: the 3 to 4 page write-up for the invest-or-not reader (steps 1 to 6c; 6d and 6e to be added)
+report/              report.md: the 3 to 4 page write-up for the invest-or-not reader (steps 1 to 6e)
 ```
 
 Data, token arrays and checkpoints never enter this repo. They live on Google Drive. Code reaches Colab by `git clone` with a single-repo token; small result files are pushed back from Colab, checkpoints and data stay on Drive:
