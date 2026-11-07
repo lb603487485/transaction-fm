@@ -7523,5 +7523,168 @@
   "accelerator": "mps",
   "fp16": false,
   "machine": "Darwin arm64 12 cores"
- }
+ },
+ "bootstrap_vs_xgboost": [
+  {
+   "variant": "06a pair: 04 pretrained H12 on the T4, seed 0",
+   "seed": 0,
+   "pr_auc": {
+    "diff": 0.01062003153482638,
+    "ci_low": 0.005893012802583634,
+    "ci_high": 0.015603858744433331,
+    "n_boot": 1000
+   },
+   "recall_at_alert": {
+    "diff": 0.01025641025641022,
+    "ci_low": 0.0039114031513175496,
+    "ci_high": 0.016291717943326164,
+    "n_boot": 1000
+   },
+   "fp_ratio": {
+    "diff": -0.01649099771570406,
+    "ci_low": -0.02654869004817459,
+    "ci_high": -0.006547729224840331,
+    "n_boot": 1000
+   },
+   "pr_auc_excludes_zero": true
+  },
+  {
+   "variant": "reference, lr 5e-5 fixed in advance (06b)",
+   "seed": 0,
+   "pr_auc": {
+    "diff": 0.008278997851879022,
+    "ci_low": 0.0031632099025288712,
+    "ci_high": 0.013470610389550029,
+    "n_boot": 1000
+   },
+   "recall_at_alert": {
+    "diff": 0.008391608391608352,
+    "ci_low": 0.0014023451515052937,
+    "ci_high": 0.015520846998649328,
+    "n_boot": 1000
+   },
+   "fp_ratio": {
+    "diff": -0.013518140419987779,
+    "ci_low": -0.024851949967183682,
+    "ci_high": -0.002265574687205311,
+    "n_boot": 1000
+   },
+   "pr_auc_excludes_zero": true
+  },
+  {
+   "variant": "reference, lr 5e-5 fixed in advance (06b)",
+   "seed": 1,
+   "pr_auc": {
+    "diff": 0.00746788468253945,
+    "ci_low": 0.0020309825419163405,
+    "ci_high": 0.01297330351223341,
+    "n_boot": 1000
+   },
+   "recall_at_alert": {
+    "diff": 0.009324009324009341,
+    "ci_low": 0.0008677706971685438,
+    "ci_high": 0.015987931362598337,
+    "n_boot": 1000
+   },
+   "fp_ratio": {
+    "diff": -0.015048776497006755,
+    "ci_low": -0.02521637624384377,
+    "ci_high": -0.001265978011806025,
+    "n_boot": 1000
+   },
+   "pr_auc_excludes_zero": true
+  },
+  {
+   "variant": "reference, lr 5e-5 fixed in advance (06b)",
+   "seed": 2,
+   "pr_auc": {
+    "diff": 0.012244566867078865,
+    "ci_low": 0.007190833790201909,
+    "ci_high": 0.017555663407027598,
+    "n_boot": 1000
+   },
+   "recall_at_alert": {
+    "diff": 0.009790209790209725,
+    "ci_low": 0.003504691116276365,
+    "ci_high": 0.01646967103973327,
+    "n_boot": 1000
+   },
+   "fp_ratio": {
+    "diff": -0.015719000471475675,
+    "ci_low": -0.02614703528733355,
+    "ci_high": -0.005872941615304668,
+    "n_boot": 1000
+   },
+   "pr_auc_excludes_zero": true
+  },
+  {
+   "variant": "lr 2e-4, selected on validation (06d)",
+   "seed": 0,
+   "pr_auc": {
+    "diff": 0.007464469852135003,
+    "ci_low": 0.0030354032129943755,
+    "ci_high": 0.011998202409550546,
+    "n_boot": 1000
+   },
+   "recall_at_alert": {
+    "diff": 0.009790209790209836,
+    "ci_low": 0.0025673038567729984,
+    "ci_high": 0.01563895781637723,
+    "n_boot": 1000
+   },
+   "fp_ratio": {
+    "diff": -0.015748835606485656,
+    "ci_low": -0.025020954634402164,
+    "ci_high": -0.0045726038446224915,
+    "n_boot": 1000
+   },
+   "pr_auc_excludes_zero": true
+  },
+  {
+   "variant": "lr 2e-4, selected on validation (06d)",
+   "seed": 1,
+   "pr_auc": {
+    "diff": -0.0008822181818438635,
+    "ci_low": -0.006590651204216075,
+    "ci_high": 0.0037596240967390443,
+    "n_boot": 1000
+   },
+   "recall_at_alert": {
+    "diff": 0.0037296037296037365,
+    "ci_low": -0.005270285494929991,
+    "ci_high": 0.010105882290825244,
+    "n_boot": 1000
+   },
+   "fp_ratio": {
+    "diff": -0.006053858733460649,
+    "ci_low": -0.016200255594902332,
+    "ci_high": 0.009117007891715653,
+    "n_boot": 1000
+   },
+   "pr_auc_excludes_zero": false
+  },
+  {
+   "variant": "lr 2e-4, selected on validation (06d)",
+   "seed": 2,
+   "pr_auc": {
+    "diff": 0.002363521995918716,
+    "ci_low": -0.0035135969365392705,
+    "ci_high": 0.007725347487192832,
+    "n_boot": 1000
+   },
+   "recall_at_alert": {
+    "diff": 0.00419580419580412,
+    "ci_low": -0.0029359268506647133,
+    "ci_high": 0.010924236093326638,
+    "n_boot": 1000
+   },
+   "fp_ratio": {
+    "diff": -0.006775045722414164,
+    "ci_low": -0.01714728721499547,
+    "ci_high": 0.005045677548164875,
+    "n_boot": 1000
+   },
+   "pr_auc_excludes_zero": false
+  }
+ ]
 }
