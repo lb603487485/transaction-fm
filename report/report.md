@@ -122,5 +122,5 @@ To monitor after deployment: population stability of every token field against t
 ## References
 
 1. Sparkov synthetic credit card transaction data (fraudTrain.csv, fraudTest.csv), Kaggle.
-2. Wells Fargo, What It Takes to Build Production-Grade Foundation Models in Finance, conference talk, 2026.
-3. Wealthsimple, Beyond NLP: Technical Challenges in Building a Foundation Model for Sequential Event Data, Toronto Machine Learning Summit, 2026.
+2. Freddy Lecue (Wells Fargo), What It Takes to Build Production-Grade Foundation Models in Finance, Toronto Machine Learning Summit, 17 June 2026.
+3. Alvin Li, Jennifer Yu and Lin Liu (Wealthsimple), Beyond NLP: Technical Challenges in Building a Foundation Model for Sequential Event Data, Toronto Machine Learning Summit, 18 June 2026.
