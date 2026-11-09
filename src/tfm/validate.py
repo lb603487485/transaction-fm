@@ -13,6 +13,8 @@ PSI reading used in the notebook: < 0.1 stable, 0.1 to 0.25 moderate shift, > 0.
 """
 from __future__ import annotations
 
+import math
+
 import numpy as np
 import pandas as pd
 
@@ -138,3 +140,26 @@ def disagreements(y, score_a, score_b, alert_rate: float = 0.006, k: int = 20) -
     only_a = only_a[np.argsort(-(a[only_a] - b[only_a]), kind="stable")][:k]
     only_b = only_b[np.argsort(-(b[only_b] - a[only_b]), kind="stable")][:k]
     return only_a, only_b
+
+
+def agreement_table(y, score_a, score_b, alert_rate: float = 0.006) -> dict:
+    """2 x 2 agreement table over the frauds: how many both models flag, A only, B only, neither, each model at
+    its own global cutoff. The full counts, not the k-row lists disagreements() keeps for display; the four
+    cells sum to the number of frauds."""
+    y, a, b = map(np.asarray, (y, score_a, score_b))
+    fr = y == 1
+    fa, fb = a >= global_cutoff(a, alert_rate), b >= global_cutoff(b, alert_rate)
+    return {"both": int((fr & fa & fb).sum()), "only_a": int((fr & fa & ~fb).sum()),
+            "only_b": int((fr & ~fa & fb).sum()), "neither": int((fr & ~fa & ~fb).sum())}
+
+
+def mcnemar_exact(n_only_a: int, n_only_b: int) -> float:
+    """Exact two-sided McNemar p-value: under equal performance each discordant fraud is equally likely to be
+    caught by A only or by B only, so the smaller count is Binomial(n_only_a + n_only_b, 0.5). Treats the
+    discordant rows as independent, which frauds inside one burst are not, so on bursty data it is optimistic."""
+    n = n_only_a + n_only_b
+    if n == 0:
+        return 1.0
+    lo = min(n_only_a, n_only_b)
+    tail = sum(math.comb(n, i) for i in range(0, lo + 1)) / 2 ** n
+    return float(min(1.0, 2 * tail))

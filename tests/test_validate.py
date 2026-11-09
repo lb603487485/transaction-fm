@@ -107,3 +107,23 @@ def test_disagreements_returns_frauds_flagged_by_exactly_one_model():
     assert not set(only_a) & set(only_b)
     short_a, _ = disagreements(y, a, b, alert_rate=0.03, k=5)
     assert len(short_a) == 5
+
+
+def test_agreement_table_counts_every_fraud_exactly_once():
+    from tfm.validate import agreement_table
+    n = 1000
+    y = np.zeros(n, dtype=int); y[:40] = 1
+    a = np.zeros(n); b = np.zeros(n)
+    a[:20] = 1.0; a[30:40] = 1.0                   # A flags frauds 0-19 and 30-39
+    b[10:30] = 1.0; b[500:510] = 1.0               # B flags frauds 10-29 and ten normals
+    t = agreement_table(y, a, b, alert_rate=0.03)
+    assert t == {"both": 10, "only_a": 20, "only_b": 10, "neither": 0}
+    assert sum(t.values()) == int(y.sum())
+
+
+def test_mcnemar_exact_is_a_two_sided_binomial_test_on_the_discordant_pairs():
+    from tfm.validate import mcnemar_exact
+    assert mcnemar_exact(30, 8) == pytest.approx(0.000472, abs=1e-6)
+    assert mcnemar_exact(8, 30) == mcnemar_exact(30, 8)
+    assert mcnemar_exact(5, 5) == 1.0
+    assert mcnemar_exact(0, 0) == 1.0

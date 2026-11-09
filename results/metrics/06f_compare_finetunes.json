@@ -7686,5 +7686,14 @@
    },
    "pr_auc_excludes_zero": false
   }
- ]
+ ],
+ "agreement": {
+  "both": 2090,
+  "only_a": 30,
+  "only_b": 8,
+  "neither": 17,
+  "n_fraud": 2145,
+  "mcnemar_exact_p": 0.0004719867429230362,
+  "pair": "04 pretrained H12 on the T4, seed 0 (A) vs XGBoost 29 features, seed 0 (B), alert rate 0.6%"
+ }
 }
