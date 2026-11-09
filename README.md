@@ -76,11 +76,36 @@ Anaconda note: pip's torch wheel ships its own `libomp.dylib`, while Anaconda's 
 
 The guide asks for the cost of the hand-built features, because "no feature engineering" is one of the talk's selling points. Two numbers: compute time is measured and stored as `feature_seconds` in `results/metrics/05_baseline.json`; authoring time is from the commit log: `baseline.py` (29 features in about 60 lines) and its 10 tests were written in one sitting on 2026-11-02, under an hour, with an AI coding assistant. That number does not refute the talk's claim, which is about maintaining hundreds of features over years; it is recorded so the report can say what this baseline cost.
 
-## Full re-run on one machine
+## Reproduce locally, from the raw csv to the report tables
 
-`scripts/run_all.sh` executes the twelve notebooks in order (01 to 06f) with `TFM_ROOT` set to the repo, the same command the laptop runs used; `--from 03` resumes, `--only 06f` runs one, `--dry-run` prints the commands. Before it: a clean virtual environment (`python3 -m venv .venv`, `pip install -r requirements.txt`, `pip install -e .`, `pytest`; not Anaconda, see the OpenMP note above) and the two Sparkov csv files in `data/raw/`. Steps 03, 04 and 06b to 06e train; measured on an M4 Pro the whole sequence is roughly thirty hours, dominated by 06b, 06c and 06d.
+Everything below runs on one machine; it was written for an Apple Silicon Mac and the same commands work on Linux with CUDA (`tfm.runtime` picks the device). Steps 03, 04 and 06b to 06e train: measured on an M4 Pro the whole sequence is roughly thirty hours, dominated by 06b (7 hours), 06c (about 10) and 06d (about 6); the rest is minutes.
 
-Two rules for such a run. It is a replication on a third machine, so its numbers are compared with each other and not, in sd units, with the T4 or M4 Pro numbers in `results/metrics/` (section 4 of the report). And the push cell of every notebook copies the new json into `results/metrics/`, which would overwrite the numbers the report cites: run it in a fresh clone on its own branch (`git checkout -b replication-<machine>`), compare the two sets of json afterwards, and decide then whether the report moves to the single-machine numbers or keeps a replication section.
+1. Clone and install into a clean virtual environment. Not Anaconda: pip's torch and Anaconda's xgboost ship two OpenMP runtimes and segfault together (note above).
+
+   ```
+   git clone https://github.com/lb603487485/transaction-fm.git && cd transaction-fm
+   git checkout -b replication-$(hostname -s)
+   python3 -m venv .venv && source .venv/bin/activate
+   pip install -r requirements.txt && pip install -e .
+   pytest                                   # 105 tests, CPU only, under ten seconds
+   ```
+
+2. Put the two Sparkov csv files in `data/raw/`: `fraudTrain.csv` (351 MB) and `fraudTest.csv` (150 MB) from the Kaggle dataset "Credit Card Transactions Fraud Detection Dataset" (kartik2112/fraud-detection), downloaded by hand or with the Kaggle CLI:
+
+   ```
+   mkdir -p data/raw && kaggle datasets download -d kartik2112/fraud-detection -p data/raw --unzip
+   ```
+
+3. Run the twelve notebooks in order with `scripts/run_all.sh`. It executes each notebook in place with its outputs kept, `TFM_ROOT` set to the repo, logs in `logs/<notebook>.log`, and stops at the first failure; `--dry-run` prints the commands, `--from 03` resumes after an interruption, `--only 06f` runs one notebook. Data, checkpoints and scores land in the gitignored mirror folders (`data/`, `pretrain/`, `finetune/`, `baseline/`, `ablate/`, `ablate_pre/`, `extras/`); the kept json and png land in `results/metrics/` and `results/figures/`.
+
+   ```
+   scripts/run_all.sh --dry-run
+   scripts/run_all.sh
+   ```
+
+4. Read the results the way the report does: `results/metrics/06f_compare_finetunes.json` has every variant against its same-machine control, `06a_validate.json` the validator checks, and the notebooks show the tables and figures inline.
+
+Two rules for such a run. It is a replication on another machine, so its numbers are compared with each other and not, in sd units, with the T4 or M4 Pro numbers committed in `results/metrics/` (section 4 of the report explains why: fine-tuning is not reproducible across machines at the 1e-3 level). And the push cell of every notebook copies the new json into `results/metrics/`, which overwrites the numbers the report cites: hence the branch in step 1. Compare the two sets of json afterwards and decide whether the report moves to the single-machine numbers or gains a replication section.
 
 ## Local development
 

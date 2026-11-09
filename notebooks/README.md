@@ -64,6 +64,7 @@ Steps 1, 2 and 5 need no GPU. Download from Drive's `tfm/` what the step reads, 
 
 ```
 pip install -r requirements.txt            # torch and transformers are only needed for steps 3, 4, 6b
+scripts/run_all.sh                          # all twelve in order, or --from 03 / --only 06f; see README "Reproduce locally"
 TFM_ROOT=$PWD jupyter notebook notebooks/05_baseline.ipynb     # or 06a_validate.ipynb, 06f_compare_finetunes.ipynb; 06b_ablations.ipynb, 06c_*.ipynb, 06d_finetune_extras.ipynb and 06e_hybrid_head.ipynb train and want MPS or CUDA
 ```
 
