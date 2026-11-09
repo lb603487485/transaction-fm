@@ -76,6 +76,12 @@ Anaconda note: pip's torch wheel ships its own `libomp.dylib`, while Anaconda's 
 
 The guide asks for the cost of the hand-built features, because "no feature engineering" is one of the talk's selling points. Two numbers: compute time is measured and stored as `feature_seconds` in `results/metrics/05_baseline.json`; authoring time is from the commit log: `baseline.py` (29 features in about 60 lines) and its 10 tests were written in one sitting on 2026-11-02, under an hour, with an AI coding assistant. That number does not refute the talk's claim, which is about maintaining hundreds of features over years; it is recorded so the report can say what this baseline cost.
 
+## Full re-run on one machine
+
+`scripts/run_all.sh` executes the twelve notebooks in order (01 to 06f) with `TFM_ROOT` set to the repo, the same command the laptop runs used; `--from 03` resumes, `--only 06f` runs one, `--dry-run` prints the commands. Before it: a clean virtual environment (`python3 -m venv .venv`, `pip install -r requirements.txt`, `pip install -e .`, `pytest`; not Anaconda, see the OpenMP note above) and the two Sparkov csv files in `data/raw/`. Steps 03, 04 and 06b to 06e train; measured on an M4 Pro the whole sequence is roughly thirty hours, dominated by 06b, 06c and 06d.
+
+Two rules for such a run. It is a replication on a third machine, so its numbers are compared with each other and not, in sd units, with the T4 or M4 Pro numbers in `results/metrics/` (section 4 of the report). And the push cell of every notebook copies the new json into `results/metrics/`, which would overwrite the numbers the report cites: run it in a fresh clone on its own branch (`git checkout -b replication-<machine>`), compare the two sets of json afterwards, and decide then whether the report moves to the single-machine numbers or keeps a replication section.
+
 ## Local development
 
 ```
