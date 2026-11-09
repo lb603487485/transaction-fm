@@ -118,3 +118,9 @@ Ceiling. The transformer scores 95.7% of test frauds above 0.99 and the 0.6% cut
 If scaled to real data and a real GPU budget, in order: run on real transactions first, since every conclusion about ceilings and new cards is a property of the generator; size the model to the token count rather than copying the 1B figure, and use perplexity only within one tokenizer; replace learned positions with RoPE and raise the context before raising depth, since real card histories are longer and less bursty than these; fine-tune several heads from one body (fraud, default, churn) to amortise pretraining, which is the actual economic argument for a foundation model; and reserve FSDP, Flash attention and LoRA for when the body is large enough to need them.
 
 To monitor after deployment: population stability of every token field against the training period; alert rate and recall at the fixed threshold by month; recall by category and cardholder group with a minimum-count rule; the share of rows on which the fine-tuning seeds disagree; and the new-card segment separately, because it is the one segment this study could not test.
+
+## References
+
+1. Sparkov synthetic credit card transaction data (fraudTrain.csv, fraudTest.csv), Kaggle.
+2. Wells Fargo, What It Takes to Build Production-Grade Foundation Models in Finance, conference talk, 2026.
+3. Wealthsimple, Beyond NLP: Technical Challenges in Building a Foundation Model for Sequential Event Data, Toronto Machine Learning Summit, 2026.
