@@ -2,7 +2,7 @@
 
 Notebooks stay thin: mount Drive, import `tfm`, call a function, plot. Any logic longer than about 20 lines moves into `src/tfm` so it can be tested and reviewed.
 
-Colab pulls and pushes with a **single-repo** fine-grained GitHub token (Contents: read and write, 30-day expiry, only `transaction-fm`) stored in Colab Secrets as `GH_TOKEN`. Small result files are pushed from Colab; checkpoints and data stay on Drive.
+Colab pulls and pushes with a **single-repo** fine-grained GitHub token (Contents: read and write, 30-day expiry, only `transaction-fm`) stored in Colab Secrets as `GH_TOKEN`, with the commit identity in two more secrets, `GIT_NAME` and `GIT_EMAIL` (use the GitHub noreply address); without the three the push cell copies results and stops. The repo to clone is the `REPO` variable at the top of every setup cell, so a fork changes one line. Small result files are pushed from Colab; checkpoints and data stay on Drive.
 
 ## Notebooks
 
@@ -28,12 +28,15 @@ Notebooks live in `MyDrive/Colab Notebooks/tfm/notebooks/` and are opened from D
 
 ```python
 import os, sys, glob, shutil
+REPO = "lb603487485/transaction-fm"                                 # on a fork: your own owner/name
 try:
     from google.colab import drive, userdata                      # Colab: mount Drive, pull the repo, sync new notebooks to Drive
     drive.mount("/content/drive")
-    tok = userdata.get("GH_TOKEN")
+    try: tok = userdata.get("GH_TOKEN")                            # only needed to push results back; a public repo clones without it
+    except Exception: tok = ""
+    url = f"https://{tok}@github.com/{REPO}.git" if tok else f"https://github.com/{REPO}.git"
     if not os.path.exists("/content/transaction-fm"):
-        !git clone -q https://{tok}@github.com/lb603487485/transaction-fm.git /content/transaction-fm
+        !git clone -q {url} /content/transaction-fm
     else:
         !cd /content/transaction-fm && git pull -q
     %pip install -q datasets xgboost
