@@ -113,3 +113,7 @@ Two rules for such a run. It is a replication on another machine, so its numbers
 pip install -e .
 pytest
 ```
+
+## License and use
+
+MIT, see `LICENSE`. This is a learning project shared as it was built; fork it, run it, change it. The report in `report/` is my own writing and every number in it comes from the runs recorded in `results/metrics/`; if you reuse the code or the text, keep the attribution the licence asks for. The Sparkov data is not redistributed here and keeps its own Kaggle terms.
